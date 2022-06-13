@@ -1,2 +1,5 @@
-# Ignoring data:
+# Ignoring data files in Version Control:
 \data
+
+# Ignoring the VSCode Settings:
+\.vscode
