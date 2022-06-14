@@ -8,8 +8,11 @@ from nltk.tokenize import word_tokenize
 
 
 # Downloading 'stopwords' and 'punk' so script can work correctly
+# Try and make this a try and except statement (checks if PC has them downloaded already, if not then downloads them?)
 nltk.download('stopwords')  # Download 'stopwords' for nltk library
 nltk.download('punkt')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
 
 # Defining 'english' stopwords for nltk
 stop_words = list(set(stopwords.words('english')))
@@ -46,17 +49,27 @@ test_data = os.path.join(base_folder_data, 'test')
 
 
 def cleanText(text):
-    '''Cleans the supplied text
+    '''Cleans the supplied text - splits text into strings provided string is in sentence/paragraph format.
     
+    Cleans the text by:
+        * Removing special characters & punctuation from strings
+        * Makes all text lowercase
+        * Creates a 'tokenized' list of the sentence
+        * Removes 'stop words' from the sentence
+        * Lemmatizes the string (normalization method to condense all forms of a word into a single representation)
+
     ADD MORE INFORMATION ABOUT FUNCTION HERE
     '''
-    
+    # Creating Lemmatizer required to clean text:
+    Lemmatizer = nltk.stem.WordNetLemmatizer() 
+
     cleaned = re.sub(r'[^(a-zA-Z)\s]','', text)  # Removing punctuation and special characters
     lowered = cleaned.lower()  # Making all text lowercase
-    tokenized = word_tokenize(lowered)
-    stopped = [w for w in tokenized if not w in stop_words]  # Removing stop words using NLTK's English stop words
+    tokenized_list = word_tokenize(lowered)
+    stopped = [w for w in tokenized_list if not w in stop_words]  # Removing stop words using NLTK's English stop words
+    lemmatized = [Lemmatizer.lemmatize(w, pos='v') for w in stopped]
 
-    return stopped
+    return lemmatized
 
 def importData(dataDirectory):
     '''Imports the data from the supplied directory "dataDirectory" and returns
