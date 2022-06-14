@@ -3,9 +3,6 @@ import re
 import random
 import nltk
 
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-
 
 # Downloading 'stopwords' and 'punk' so script can work correctly
 # Try and make this a try and except statement (checks if PC has them downloaded already, if not then downloads them?)
@@ -15,7 +12,7 @@ nltk.download('wordnet')
 nltk.download('omw-1.4')
 
 # Defining 'english' stopwords for nltk
-stop_words = list(set(stopwords.words('english')))
+stop_words = list(set(nltk.corpus.stopwords.words('english')))
 
 
 # import sklearn
@@ -65,7 +62,7 @@ def cleanText(text):
 
     cleaned = re.sub(r'[^(a-zA-Z)\s]','', text)  # Removing punctuation and special characters
     lowered = cleaned.lower()  # Making all text lowercase
-    tokenized_list = word_tokenize(lowered)
+    tokenized_list = nltk.tokenize.word_tokenize(lowered)
     stopped = [w for w in tokenized_list if not w in stop_words]  # Removing stop words using NLTK's English stop words
     lemmatized = [Lemmatizer.lemmatize(w, pos='v') for w in stopped]
 
