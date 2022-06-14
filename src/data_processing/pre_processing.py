@@ -1,14 +1,17 @@
 import os
 import re
 import random
-from traceback import print_tb
-
 import nltk
+
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
+
+# Downloading 'stopwords' and 'punk' so script can work correctly
 nltk.download('stopwords')  # Download 'stopwords' for nltk library
 nltk.download('punkt')
+
+# Defining 'english' stopwords for nltk
 stop_words = list(set(stopwords.words('english')))
 
 
@@ -31,18 +34,22 @@ stop_words = list(set(stopwords.words('english')))
 
 
 # Getting file path to data:
-os.chdir('....')
+os.chdir('....')  # Changing the working directory from script directory
 cwd = os.getcwd()
-base_folder_data = os.path.join(cwd, r'data\aclImdb')
+base_folder_data = os.path.join(cwd, r'data\aclImdb')  # Specifying base data directory
 
 # Setting folders for training and testing data:
 train_data = os.path.join(base_folder_data, 'train')
 test_data = os.path.join(base_folder_data, 'test')
-print('base_folder_data:', base_folder_data)
+
+# print('base_folder_data:', base_folder_data)  # FOR DEBUGGING PURPOSES
 
 
 def cleanText(text):
-    '''Cleans the supplied text'''
+    '''Cleans the supplied text
+    
+    ADD MORE INFORMATION ABOUT FUNCTION HERE
+    '''
     
     cleaned = re.sub(r'[^(a-zA-Z)\s]','', text)  # Removing punctuation and special characters
     lowered = cleaned.lower()  # Making all text lowercase
@@ -65,7 +72,6 @@ def importData(dataDirectory):
                     text = f.read()
                     text = text.replace("<br />", "\n\n")  # Removing HTML formatting and replacing with Python formatting
                     if text.strip():  # Removing whitespace from start & end of strings
-                        # reviews.append( (cleanText(text)) )
                         labels = {
                             "Review Category": {
                                 "Positive": "pos" == label,
