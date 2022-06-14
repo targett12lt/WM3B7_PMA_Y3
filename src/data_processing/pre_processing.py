@@ -22,9 +22,8 @@ stop_words = list(set(nltk.corpus.stopwords.words('english')))
 # * Import the data - DONE
 # * Make all text lowercase - DONE
 # * Remove all punctuation - DONE
-# * Remove any emojis?? If there are any?
 # * Tokenization - DONE
-# * Normalizing words (condensing different forms of the same word into a single form): Two major methods -> Stemming or Lemmaziation
+# * Normalizing words (condensing different forms of the same word into a single form): Two major methods -> Stemming or Lemmaziation - DONE
 # * BoW Model
 # * Removing Stop Words - DONE
 # * Remove low frequency words 
@@ -88,6 +87,7 @@ def importData(dataDirectory):
                                 "Negative": "neg" == label
                             }
                         }
+                        # reviews.append((text, labels))  # If no pre-processing is required
                         reviews.append((cleanText(text), labels))
 
     # Shuffling list 'reviews' so the same type are not all next to each other
