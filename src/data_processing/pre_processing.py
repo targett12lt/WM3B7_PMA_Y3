@@ -1,10 +1,34 @@
 import os
+import re
 import random
+from traceback import print_tb
 
 import nltk
 from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+
+nltk.download('stopwords')  # Download 'stopwords' for nltk library
+nltk.download('punkt')
+stop_words = list(set(stopwords.words('english')))
+
+
 # import sklearn
 # import pickle  # To save the model
+
+# ''' THINGS THAT NEED TO BE INCLUDED:
+# * Import the data - DONE
+# * Make all text lowercase - DONE
+# * Remove all punctuation - DONE
+# * Remove any emojis?? If there are any?
+# * Tokenization - DONE
+# * Normalizing words (condensing different forms of the same word into a single form): Two major methods -> Stemming or Lemmaziation
+# * BoW Model
+# * Removing Stop Words - DONE
+# * Remove low frequency words 
+# '''
+
+
+
 
 # Getting file path to data:
 os.chdir('....')
@@ -17,13 +41,15 @@ test_data = os.path.join(base_folder_data, 'test')
 print('base_folder_data:', base_folder_data)
 
 
-# files_pos = os.listdir(os.path.join(train_data, 'pos'))
-# files_pos = [open(os.path.join(train_data, 'pos')+f, 'r').read() for f in files_pos]
+def cleanText(text):
+    '''Cleans the supplied text'''
+    
+    cleaned = re.sub(r'[^(a-zA-Z)\s]','', text)  # Removing punctuation and special characters
+    lowered = cleaned.lower()  # Making all text lowercase
+    tokenized = word_tokenize(lowered)
+    stopped = [w for w in tokenized if not w in stop_words]  # Removing stop words using NLTK's English stop words
 
-# print('Files pos: ', files_pos)
-
-# files_neg = os.listdir(os.path.join(train_data, 'neg'))
-# files_neg = [open('train/neg/'+f, 'r').read() for f in files_neg]
+    return stopped
 
 def importData(dataDirectory):
     '''Imports the data from the supplied directory "dataDirectory" and returns
@@ -32,27 +58,28 @@ def importData(dataDirectory):
     reviews = []  # Creating a basic structure to store data in
 
     for label in ["pos", "neg"]:
-        labeled_directory = f"{train_data}/{label}"
+        labeled_directory = f"{dataDirectory}/{label}"
         for review in os.listdir(labeled_directory):
             if review.endswith(".txt"):
                 with open(f"{labeled_directory}/{review}", encoding="utf8") as f:
                     text = f.read()
                     text = text.replace("<br />", "\n\n")  # Removing HTML formatting and replacing with Python formatting
                     if text.strip():  # Removing whitespace from start & end of strings
+                        # reviews.append( (cleanText(text)) )
                         labels = {
                             "Review Category": {
                                 "Positive": "pos" == label,
                                 "Negative": "neg" == label
                             }
                         }
-                        reviews.append((text, labels))
+                        reviews.append((cleanText(text), labels))
 
     # Shuffling list 'reviews' so the same type are not all next to each other
     random.shuffle(reviews)
 
-    return reviews  # Returning list of reviews so it can be used to train a model
+    return reviews
 
 
 training_data_set = importData(train_data)
-
+print(training_data_set)
 
