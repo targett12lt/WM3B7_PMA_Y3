@@ -1,7 +1,16 @@
+# General modules:
 import os
 import re
 import random
+
+# For data:
+import pandas
+# import pickle  # To save the model
+
+# For NLP/Sentinent Analysis:
 import nltk
+# import sklearn
+
 
 
 # Downloading 'stopwords' and 'punk' so script can work correctly
@@ -15,9 +24,6 @@ nltk.download('omw-1.4')
 stop_words = list(set(nltk.corpus.stopwords.words('english')))
 
 
-# import sklearn
-# import pickle  # To save the model
-
 # ''' THINGS THAT NEED TO BE INCLUDED:
 # * Import the data - DONE
 # * Make all text lowercase - DONE
@@ -28,8 +34,6 @@ stop_words = list(set(nltk.corpus.stopwords.words('english')))
 # * Removing Stop Words - DONE
 # * Remove low frequency words 
 # '''
-
-
 
 
 # Getting file path to data:
