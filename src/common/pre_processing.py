@@ -4,7 +4,7 @@ import re
 import random
 
 # For data:
-import pandas
+# import pandas  # Getting DLL error when importing at the moment
 # import pickle  # To save the model
 
 # For NLP/Sentinent Analysis:
@@ -30,22 +30,9 @@ stop_words = list(set(nltk.corpus.stopwords.words('english')))
 # * Remove all punctuation - DONE
 # * Tokenization - DONE
 # * Normalizing words (condensing different forms of the same word into a single form): Two major methods -> Stemming or Lemmaziation - DONE
-# * BoW Model
 # * Removing Stop Words - DONE
-# * Remove low frequency words 
+# * Remove low frequency words? This can probabably be achieved using TF or TF-IDF
 # '''
-
-
-# Getting file path to data:
-os.chdir('....')  # Changing the working directory from script directory
-cwd = os.getcwd()
-base_folder_data = os.path.join(cwd, r'data\aclImdb')  # Specifying base data directory
-
-# Setting folders for training and testing data:
-train_data = os.path.join(base_folder_data, 'train')
-test_data = os.path.join(base_folder_data, 'test')
-
-# print('base_folder_data:', base_folder_data)  # FOR DEBUGGING PURPOSES
 
 
 def cleanText(text):
@@ -100,6 +87,6 @@ def importData(dataDirectory):
     return reviews
 
 
-training_data_set = importData(train_data)
-print(training_data_set)
+# training_data_set = importData(train_data)
+# print(training_data_set)
 
