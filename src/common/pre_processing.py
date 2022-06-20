@@ -9,6 +9,9 @@ import random
 
 # For NLP/Sentinent Analysis:
 import nltk
+import pandas as pd
+import numpy as np
+import numpy
 # import sklearn
 
 
@@ -62,6 +65,7 @@ def importData(dataDirectory):
     '''Imports the data from the supplied directory "dataDirectory" and returns
     data in a list format, ensuring data is "shuffled" so positive and negative
     reviews aren't split obviously.'''
+    df = pd.DataFrame(columns=['Review', 'PositiveReview', 'NegativeReview', 'Sentiment'])
     reviews = []  # Creating a basic structure to store data in
 
     for label in ["pos", "neg"]:
@@ -72,21 +76,20 @@ def importData(dataDirectory):
                     text = f.read()
                     text = text.replace("<br />", "\n\n")  # Removing HTML formatting and replacing with Python formatting
                     if text.strip():  # Removing whitespace from start & end of strings
-                        labels = {
-                            "Review Category": {
-                                "Positive": "pos" == label,
-                                "Negative": "neg" == label
-                            }
-                        }
-                        # reviews.append((text, labels))  # If no pre-processing is required
-                        reviews.append((cleanText(text), labels))
+                        # labels = {
+                        #     "Review Category": {
+                        #         "Positive": "pos" == label,
+                        #         "Negative": "neg" == label
+                        #     }
+                        # }
+
+                        # df.loc[df.shape[0]] = [text, "pos" == label, "neg" == label, None]  # Without cleaning
+                        df.loc[df.shape[0]] = [cleanText(text), "pos" == label, "neg" == label, None]
+                        
 
     # Shuffling list 'reviews' so the same type are not all next to each other
-    random.shuffle(reviews)
+    # df.sample(frac=1, random_state=1).reset_index()
 
-    return reviews
+    return df
 
-
-# training_data_set = importData(train_data)
-# print(training_data_set)
 

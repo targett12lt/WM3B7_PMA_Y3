@@ -2,7 +2,7 @@ import common
 import models
 
 import os
-# import pandas as pd
+import pandas as pd
 
 
 # Getting file path to data:
@@ -20,4 +20,4 @@ test_data = os.path.join(base_folder_data, 'test')
 # training_df = pd.DataFrame(columns=['Review', 'PositiveReview', 'NegativeReview', 'Sentiment'])
 
 training_data = common.importData(train_data)
-print(training_data)
+print(training_data.head(30))
