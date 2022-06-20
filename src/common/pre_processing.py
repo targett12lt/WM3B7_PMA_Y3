@@ -1,19 +1,14 @@
 # General modules:
 import os
 import re
-import random
 
 # For data:
-# import pandas  # Getting DLL error when importing at the moment
+import pandas as pd
 # import pickle  # To save the model
 
 # For NLP/Sentinent Analysis:
 import nltk
-import pandas as pd
-import numpy as np
-import numpy
 # import sklearn
-
 
 
 # Downloading 'stopwords' and 'punk' so script can work correctly
@@ -92,4 +87,15 @@ def importData(dataDirectory):
 
     return df
 
+
+def save_to_pkl(dataframe, df_name):
+    '''Saves the supplied dataframe in PKL format in the current working directory'''
+    # current_working_directory = os.getcwd()
+    dataframe.to_pickle(df_name)
+
+def read_from_pkl(pkl_location):
+    '''Creates and returns a Pandas Dataframe from a specified PKL file'''
+    
+    df = pd.read_pickle(pkl_location)
+    return df
 
