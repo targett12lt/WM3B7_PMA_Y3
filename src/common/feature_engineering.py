@@ -80,10 +80,6 @@ def bagOfWords(documents):
     '''
     vectorizer = CountVectorizer()  # Initializing 'CountVectorizer'
     x = vectorizer.fit_transform(documents.values)
-
-    # print(vectorizer.get_feature_names())  # Printing 'feature_names' for dataset
-    # print(x.toarray())  # Creating an array based upon 'CountVectorizer' for dataset
     
     return vectorizer.get_feature_names(), x.toarray()
 
-    # documents['']
