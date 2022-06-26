@@ -1,5 +1,5 @@
 from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer, TfidfVectorizer
-
+from . import pre_processing
 
 
 from statistics import mean
@@ -27,31 +27,22 @@ sia = SentimentAnalyzer()
 # *Bag of words approach - a way of extracting features from text for use in modelling, such as ML Algorthms
 #   - It describes the occurence of words in a document
 
-def tf_idf(dataset):
-    'Utilises the TF-IDF Feature Engineering approach'
-    print('dataset:', dataset)
-    tfIdfVectorizer= TfidfVectorizer(use_idf=True)
-    for review in dataset:
-        tfIdf = tfIdfVectorizer.fit_transform(review)
-        df = pd.DataFrame(tfIdf[0].T.todense(), index=tfIdfVectorizer.get_feature_names(), columns=["TF-IDF"])
-        df = df.sort_values('TF-IDF', ascending=False)
-    print(df.head(25))
-    print(tfIdf.shape)
-    print(tfIdfVectorizer.get_feature_names_out())
-    print(len(tfIdfVectorizer.get_feature_names_out()))
-
-    # tf_idf_transformer = TfidfTransformer(use_idf=True)
-    # count_vectorizer = CountVectorizer()
+def tf_idf(BOW):
+    '''Utilises the TF-IDF Feature Engineering approach
     
-    # wordCount = count_vectorizer.fit_transform(dataset)
-    # new_tf_idf = tf_idf_transformer.fit_transform(wordCount)
-    # df = pd.DataFrame(new_tf_idf[0].T.todense(), index=count_vectorizer.get_feature_names(), columns=["TF-IDF"])
-    # df = df.sort_values('TF-IDF', ascending=False)
-    # print (df.head(25))
+    REQUIRES: BOW INPUT
+
+    '''
+    all_words = getWords(BOW)
+
+    print('All words == ', all_words)
+
+    TFIDF_Transformer = TfidfTransformer().fit(all_words)
+    print(TFIDF_Transformer.idf_)
 
 
 
-def tf(bagOfWords, ):
+def tf(dataframe):
     '''Utilises the term frequency (TF) - weighting method
     
     Inputs: 
@@ -62,24 +53,44 @@ def tf(bagOfWords, ):
     * Dictionary containing term frequency
 
     '''
-    tf_Dictionary = {}
-    Length_BagOfWords = len(bagOfWords)
+
+    BOW_Transformer = CountVectorizer(analyzer = pre_processing.cleanText).fit(dataframe['Review'])
+
+    bag_of_words_review = BOW_Transformer.transform(dataframe['Review'])
+
+    print('Shape of Sparse Matrix:', bag_of_words_review.shape)
+    print('Amount of Non-Zero occurences: ', bag_of_words_review.nnz)
+    print('Sparsity of matrix: ', (100.0 * bag_of_words_review.nnz / (bag_of_words_review.shape[0] * bag_of_words_review.shape[1])))
+    # Need to add returns stuff here
+
+    return bag_of_words_review
+    
 
 def n_gram(n_value):
     'Allows the user to be able to input the n-value'
 
-def FrequencyDistribution():
-    '''Utilises nltk's frequency distribution function'''
-    print("Hi from the FD Function")
+def getWords(CleanedList):
+    '''Takes a list of 'cleaned' words and returns a string containing all words'''
+    for tokens in CleanedList:
+        for token in tokens:
+            yield token
 
-def bagOfWords(documents):
-    '''Utilises SkLean's Count Vectoriser function to implement
-    a "bag of words" method
+def FrequencyDistribution(Reviews):
+    '''Utilises nltk's frequency distribution function
     
-    Function assumes all sentances have been tokenized as part of preprocessing
-    '''
-    vectorizer = CountVectorizer()  # Initializing 'CountVectorizer'
-    x = vectorizer.fit_transform(documents.values)
-    
-    return vectorizer.get_feature_names(), x.toarray()
+    Tells you how many times a specific word appears in a given text
+
+    '''    
+    all_words = getWords(Reviews)
+
+    fd = nltk.FreqDist(all_words)
+    most_common = fd.most_common(25)
+    print(fd)
+    print('Most common: ', most_common, '\n\n\n\n')
+    print('Tabulated: ', fd.tabulate(5))
+
+def word_count():
+    '''Counts the number of words in a document and returns the value'''
+
+    print('Hello world')
 

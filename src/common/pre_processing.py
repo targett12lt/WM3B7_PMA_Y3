@@ -37,11 +37,11 @@ def cleanText(text):
     '''Cleans the supplied text - splits text into strings provided string is in sentence/paragraph format.
     
     Cleans the text by:
-        * Removing special characters & punctuation from strings
-        * Makes all text lowercase
-        * Creates a 'tokenized' list of the sentence
-        * Removes 'stop words' from the sentence
-        * Lemmatizes the string (normalization method to condense all forms of a word into a single representation)
+        1. Removing special characters & punctuation from strings
+        2. Makes all text lowercase
+        3. Creates a 'tokenized' list of the sentence
+        4. Removes 'stop words' from the sentence
+        5. Lemmatizes the string (normalization method to condense all forms of a word into a single representation)
 
     ADD MORE INFORMATION ABOUT FUNCTION HERE
     '''
@@ -54,6 +54,7 @@ def cleanText(text):
     stopped = [w for w in tokenized_list if not w in stop_words]  # Removing stop words using NLTK's English stop words
     lemmatized = [Lemmatizer.lemmatize(w, pos='v') for w in stopped]
 
+    # print(lemmatized)
     return lemmatized
 
 def importData(dataDirectory):
@@ -78,8 +79,8 @@ def importData(dataDirectory):
                         #     }
                         # }
 
-                        # df.loc[df.shape[0]] = [text, "pos" == label, "neg" == label, None]  # Without cleaning
-                        df.loc[df.shape[0]] = [cleanText(text), "pos" == label, "neg" == label, None]
+                        df.loc[df.shape[0]] = [text, "pos" == label, "neg" == label, None]  # Without cleaning
+                        # df.loc[df.shape[0]] = [cleanText(text), "pos" == label, "neg" == label, None]
                         
 
     # Shuffling list 'reviews' so the same type are not all next to each other
@@ -99,3 +100,9 @@ def read_from_pkl(pkl_location):
     df = pd.read_pickle(pkl_location)
     return df
 
+def add_cleaned_column(dataframe, original_col_name, new_col_name, clean=True):
+    '''Adds a new column containing all the reviews but not cleaned'''
+    # dataframe[new_col_name] = dataframe[original_col_name]
+    # if clean:
+    #     dataframe[new_col_name].apply(cleanText)
+    dataframe[new_col_name] = dataframe[original_col_name].apply(cleanText)
