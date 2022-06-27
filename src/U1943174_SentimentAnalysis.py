@@ -15,11 +15,11 @@ test_data = os.path.join(base_folder_data, 'test')
 # print('base_folder_data:', base_folder_data)  # FOR DEBUGGING PURPOSES
 
 # If running from scratch and creating PKL:
-# training_data = common.importData(train_data)
-# common.save_to_pkl(training_data, 'TrainingData.pkl')  # Saving data to pkl so it can be opened quickly
+training_data = common.importData(train_data)
+common.save_to_pkl(training_data, 'TrainingData.pkl')  # Saving data to pkl so it can be opened quickly
 
 # Importing data from PKL file to make debugging/development quicker:
-training_data = common.read_from_pkl('TrainingData.pkl')
+# training_data = common.read_from_pkl('TrainingData.pkl')
 
 # print(training_data.head(30))  # FOR DEBUGGING PURPOSES
 

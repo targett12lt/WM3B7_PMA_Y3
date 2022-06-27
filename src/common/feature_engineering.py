@@ -69,11 +69,6 @@ def tf(dataframe):
 def n_gram(n_value):
     'Allows the user to be able to input the n-value'
 
-def getWords(CleanedList):
-    '''Takes a list of 'cleaned' words and returns a string containing all words'''
-    for tokens in CleanedList:
-        for token in tokens:
-            yield token
 
 def FrequencyDistribution(Reviews):
     '''Utilises nltk's frequency distribution function

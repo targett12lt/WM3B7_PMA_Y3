@@ -32,6 +32,11 @@ stop_words = list(set(nltk.corpus.stopwords.words('english')))
 # * Remove low frequency words? This can probabably be achieved using TF or TF-IDF
 # '''
 
+# def getWords(CleanedList):
+#     '''Takes a list of 'cleaned' words and returns a string containing all words'''
+#     for tokens in CleanedList:
+#         for token in tokens:
+#             yield token
 
 def cleanText(text):
     '''Cleans the supplied text - splits text into strings provided string is in sentence/paragraph format.
@@ -48,14 +53,18 @@ def cleanText(text):
     # Creating Lemmatizer required to clean text:
     Lemmatizer = nltk.stem.WordNetLemmatizer() 
 
+    # Cleaning text:
     cleaned = re.sub(r'[^(a-zA-Z)\s]','', text)  # Removing punctuation and special characters
     lowered = cleaned.lower()  # Making all text lowercase
     tokenized_list = nltk.tokenize.word_tokenize(lowered)
     stopped = [w for w in tokenized_list if not w in stop_words]  # Removing stop words using NLTK's English stop words
     lemmatized = [Lemmatizer.lemmatize(w, pos='v') for w in stopped]
 
-    # print(lemmatized)
-    return lemmatized
+    # Converting list back into string:
+    cleaned_string = ' '.join(lemmatized)
+
+    # print(cleaned_string)
+    return cleaned_string
 
 def importData(dataDirectory):
     '''Imports the data from the supplied directory "dataDirectory" and returns
@@ -72,15 +81,7 @@ def importData(dataDirectory):
                     text = f.read()
                     text = text.replace("<br />", "\n\n")  # Removing HTML formatting and replacing with Python formatting
                     if text.strip():  # Removing whitespace from start & end of strings
-                        # labels = {
-                        #     "Review Category": {
-                        #         "Positive": "pos" == label,
-                        #         "Negative": "neg" == label
-                        #     }
-                        # }
-
                         df.loc[df.shape[0]] = [text, "pos" == label, "neg" == label, None]  # Without cleaning
-                        # df.loc[df.shape[0]] = [cleanText(text), "pos" == label, "neg" == label, None]
                         
 
     # Shuffling list 'reviews' so the same type are not all next to each other
