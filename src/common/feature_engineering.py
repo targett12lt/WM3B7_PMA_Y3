@@ -1,6 +1,6 @@
-from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer, TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.preprocessing import LabelEncoder
-from . import pre_processing
+# from . import pre_processing
 
 
 from statistics import mean
@@ -15,28 +15,47 @@ sia = SentimentAnalyzer()
 # Feature engineering = process of creating features for the ML models to use for classification models
 
 # NEEDS TO INCLUDE:
-# *N-grams
-# * TF-IDF
+# *N-grams - Implemented NOT TESTED
+# * TF-IDF - WORKING
 # *Bag of words approach - a way of extracting features from text for use in modelling, such as ML Algorthms
 #   - It describes the occurence of words in a document
+# BOW - WORKING
 
-def tf_idf(dataframe):
-    '''Utilises the TF-IDF Feature Engineering approach
-    
-    REQUIRES: BOW INPUT
-
+def tf_idf(training_data, test_data):
     '''
-    # all_words = getWords(BOW)
+    INFORMATION ABOUT FUNCTION HERE
 
-    # print('All words == ', all_words)
+    Inputs:
+    * 'training_data' - 
+    * 'test_data' - 
 
-    TFIDF_Vectorizer = TfidfVectorizer(stop_words=pre_processing.stop_words)
-    X_val = TFIDF_Vectorizer.fit_transform(dataframe['Review'])
-    Y_Val = TFIDF_Vectorizer.fit_transform(dataframe['Review'])
+    Outputs:
+    * Vect_Training - 
+    * Vect_Testing -
+    * featureNames - 
+    '''
+    # Creating Vectorizer object to call:
+    TFIDF_Vectorizer = TfidfVectorizer(use_idf=True)
+    
+    # Vectorized objects:
+    Vect_Training = TFIDF_Vectorizer.fit_transform(training_data)
+    Vect_Testing = TFIDF_Vectorizer.transform(test_data)
+    
+    # Getting Feature Names:
     featureNames = TFIDF_Vectorizer.get_feature_names()
-    print(TFIDF_Vectorizer.idf_)
 
-    return X_val, Y_Val, featureNames
+    # Printing information about datasets:
+    # Training Dataset:
+    print('Vect_Training: ', Vect_Training.shape)
+
+    # Testing dataset
+    print('Vect_Testing: ', Vect_Testing.shape)
+
+    # General Information:
+    print('IDF Info for Vectorizer: ', TFIDF_Vectorizer.idf_)
+
+    return Vect_Training, Vect_Testing, featureNames
+
 
 def DocumentTermMatrix(dataframe, X_Vals, Y_Vals, featureNames):
     '''
