@@ -92,9 +92,25 @@ def BagOfWords(training_data, test_data):
 
     return BOW_Training, BOW_Testing  
 
-def n_gram(n_value):
-    'Allows the user to be able to input the n-value'
+def n_gram(n_value, training_data, test_data):
+    'Allows the user to be able to input the n-value and returns n_grams of ONLY that value'
+    # 'binary = False' means that the vocabulary vector is filled with term-frequency:
+    BOW_Vectorizer = CountVectorizer(binary=False, ngram_range=(n_value, n_value))
 
+    ngram_Training = BOW_Vectorizer.fit_transform(training_data)
+    ngram_Testing = BOW_Vectorizer.transform(test_data)
+
+    # Information about Training BOW:
+    print('Shape of Sparse Matrix:', ngram_Training.shape)
+    print('Amount of Non-Zero occurences: ', ngram_Training.nnz)
+    print('Sparsity of matrix: ', (100.0 * ngram_Training.nnz / (ngram_Training.shape[0] * ngram_Training.shape[1])))
+
+    # Information about Testing BOW:
+    print('\nShape of Sparse Matrix:', ngram_Testing.shape)
+    print('Amount of Non-Zero occurences: ', ngram_Testing.nnz)
+    print('Sparsity of matrix: ', (100.0 * ngram_Testing.nnz / (ngram_Testing.shape[0] * ngram_Testing.shape[1])))
+
+    return ngram_Training, ngram_Testing  
 
 def FrequencyDistribution(Reviews):
     # NOT THE SAME AS TERM FREQUENCY, as it is the 'Frequency Distribution'
