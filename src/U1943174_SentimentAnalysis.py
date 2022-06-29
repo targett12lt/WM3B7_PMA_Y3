@@ -100,57 +100,22 @@ test_reviews = test_data.CleanedReview
 test_sentiments = test_data.Sentiment
 test_sentiments = test_sentiments.astype('int')
 
-# Acc code:
+# BAG OF WORDS:
 BOW_Training, BOW_Testing = common.BagOfWords(training_data.CleanedReview, test_data.CleanedReview)
 
+# TF-IDF:
 Vect_Training, Vect_Testing, featureNames = common.tf_idf(training_data.CleanedReview, test_data.CleanedReview)
 
-# Logisitc Regression Model:
-lr=LogisticRegression(penalty='l2',max_iter=500,C=1,random_state=42)
-
-# Fitting the model for BOW:
-print('CV train reviews: ', BOW_Training)
-print('Train Sentiments: ', train_sentiments)
-lr_bow=lr.fit(BOW_Testing,train_sentiments)
-print(lr_bow)
-#Fitting the model for tfidf features
-lr_tfidf=lr.fit(Vect_Training,train_sentiments)
-print(lr_tfidf)
-
-#Predicting the model for bag of words
-lr_bow_predict = lr.predict(BOW_Testing)
-print(lr_bow_predict)
-##Predicting the model for tfidf features
-lr_tfidf_predict=lr.predict(Vect_Testing)
-print(lr_tfidf_predict)
-
-
-#Accuracy score for bag of words
-lr_bow_score=accuracy_score(test_sentiments,lr_bow_predict)
-print("lr_bow_score :",lr_bow_score)
-#Accuracy score for tfidf features
-lr_tfidf_score=accuracy_score(test_sentiments,lr_tfidf_predict)
-print("lr_tfidf_score :",lr_tfidf_score)
-
-#Classification report for bag of words 
-lr_bow_report=classification_report(test_sentiments,lr_bow_predict,target_names=['Positive','Negative'])
-print(lr_bow_report)
-
-#Classification report for tfidf features
-lr_tfidf_report=classification_report(test_sentiments,lr_tfidf_predict,target_names=['Positive','Negative'])
-print(lr_tfidf_report)
-
-#confusion matrix for bag of words
-cm_bow=confusion_matrix(test_sentiments,lr_bow_predict,labels=[1,0])
-print(cm_bow)
-#confusion matrix for tfidf features
-cm_tfidf=confusion_matrix(test_sentiments,lr_tfidf_predict,labels=[1,0])
-print(cm_tfidf)
-
-# NEW
-
-
 ######################## USING FEATURES TO TRAIN MODELS ########################
+
+####### Logistic Regssion Model with BOW's:
+
+models.logRegression(BOW_Training, train_sentiments, BOW_Testing, test_sentiments, 'BOW')
+
+####### Logistic Regssion Model with TF-IDF:
+models.logRegression(Vect_Training, train_sentiments, Vect_Testing, test_sentiments, 'TF-IDF')
+
+######## OLD CODE 
 
 # predictions = models.linRegression(X_Train, Y_Train, X_Test, Y_Test)
 # clf = Pipeline(steps =[
