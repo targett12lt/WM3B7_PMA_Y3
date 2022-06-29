@@ -111,7 +111,7 @@ def BagOfWords(training_data, test_data):
 
     return BOW_Training, BOW_Testing  
 
-def n_gram(n_value, training_data, test_data):
+def n_gram(n_value: int, training_data, test_data):
     'Allows the user to be able to input the n-value and returns n_grams of ONLY that value'
     # 'binary = False' means that the vocabulary vector is filled with term-frequency:
     BOW_Vectorizer = CountVectorizer(binary=False, ngram_range=(n_value, n_value))

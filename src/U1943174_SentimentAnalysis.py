@@ -100,11 +100,17 @@ test_reviews = test_data.CleanedReview
 test_sentiments = test_data.Sentiment
 test_sentiments = test_sentiments.astype('int')
 
-# BAG OF WORDS:
+# BAG OF WORDS (Unigram):
 BOW_Training, BOW_Testing = common.BagOfWords(training_data.CleanedReview, test_data.CleanedReview)
 
 # TF-IDF:
 Vect_Training, Vect_Testing, featureNames = common.tf_idf(training_data.CleanedReview, test_data.CleanedReview)
+
+# Bigram:
+BiGram_Training, BiGram_Testing = common.n_gram(2, training_data.CleanedReview, test_data.CleanedReview)
+
+# Trigram:
+Trigram_Training, Trigram_Testing = common.n_gram(3, training_data.CleanedReview, test_data.CleanedReview)
 
 ######################## USING FEATURES TO TRAIN MODELS ########################
 
@@ -114,6 +120,13 @@ models.logRegression(BOW_Training, train_sentiments, BOW_Testing, test_sentiment
 
 ####### Logistic Regssion Model with TF-IDF:
 models.logRegression(Vect_Training, train_sentiments, Vect_Testing, test_sentiments, 'TF-IDF')
+
+####### Logistic Regssion Model with Bigrams:
+models.logRegression(BiGram_Training, train_sentiments, BiGram_Testing, test_sentiments, 'Bigram')
+
+####### Logistic Regssion Model with Trigrams:
+models.logRegression(BiGram_Training, train_sentiments, BiGram_Testing, test_sentiments, 'Trigram')
+
 
 ######## OLD CODE 
 
