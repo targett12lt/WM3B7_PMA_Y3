@@ -4,11 +4,9 @@ import re
 
 # For data:
 import pandas as pd
-# import pickle  # To save the model
 
 # For NLP/Sentinent Analysis:
 import nltk
-# import sklearn
 
 
 # Downloading 'stopwords' and 'punk' so script can work correctly
@@ -21,7 +19,6 @@ nltk.download('omw-1.4')
 # Defining 'english' stopwords for nltk
 stop_words = list(set(nltk.corpus.stopwords.words('english')))
 
-
 # ''' THINGS THAT NEED TO BE INCLUDED:
 # * Import the data - DONE
 # * Make all text lowercase - DONE
@@ -31,12 +28,6 @@ stop_words = list(set(nltk.corpus.stopwords.words('english')))
 # * Removing Stop Words - DONE
 # * Remove low frequency words? This can probabably be achieved using TF or TF-IDF
 # '''
-
-# def getWords(CleanedList):
-#     '''Takes a list of 'cleaned' words and returns a string containing all words'''
-#     for tokens in CleanedList:
-#         for token in tokens:
-#             yield token
 
 def cleanText(text):
     '''Cleans the supplied text - splits text into strings provided string is in sentence/paragraph format.
@@ -63,14 +54,13 @@ def cleanText(text):
     # Converting list back into string:
     cleaned_string = ' '.join(lemmatized)
 
-    # print(cleaned_string)
     return cleaned_string
 
 def importData(dataDirectory):
     '''Imports the data from the supplied directory "dataDirectory" and returns
     data in a list format, ensuring data is "shuffled" so positive and negative
     reviews aren't split obviously.'''
-    df = pd.DataFrame(columns=['Review', 'PositiveReview', 'NegativeReview', 'Sentiment'])
+    df = pd.DataFrame(columns=['Review', 'Sentiment'])
     reviews = []  # Creating a basic structure to store data in
 
     for label in ["pos", "neg"]:
@@ -81,7 +71,10 @@ def importData(dataDirectory):
                     text = f.read()
                     text = text.replace("<br />", "\n\n")  # Removing HTML formatting and replacing with Python formatting
                     if text.strip():  # Removing whitespace from start & end of strings
-                        df.loc[df.shape[0]] = [text, "pos" == label, "neg" == label, None]  # Without cleaning
+                        if label == 'pos':
+                            df.loc[df.shape[0]] = [text, 1]  # Without cleaning
+                        else:
+                            df.loc[df.shape[0]] = [text, 0]  # Without cleaning
                         
 
     # Shuffling list 'reviews' so the same type are not all next to each other
@@ -92,7 +85,6 @@ def importData(dataDirectory):
 
 def save_to_pkl(dataframe, df_name):
     '''Saves the supplied dataframe in PKL format in the current working directory'''
-    # current_working_directory = os.getcwd()
     dataframe.to_pickle(df_name)
 
 def read_from_pkl(pkl_location):
@@ -103,7 +95,5 @@ def read_from_pkl(pkl_location):
 
 def add_cleaned_column(dataframe, original_col_name, new_col_name, clean=True):
     '''Adds a new column containing all the reviews but not cleaned'''
-    # dataframe[new_col_name] = dataframe[original_col_name]
-    # if clean:
-    #     dataframe[new_col_name].apply(cleanText)
     dataframe[new_col_name] = dataframe[original_col_name].apply(cleanText)
+
