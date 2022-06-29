@@ -65,12 +65,7 @@ print(training_data)
 
 ############################## FEATURE ENGINEERING #############################
 
-# bag_of_words = common.BagOfWords(training_data)
-
 # common.FrequencyDistribution(training_data['CleanedReview'])
-
-# TFIDF_Output = common.tf_idf(training_data)  # Returns X and Y Vals from Tfidf Vectorizer
-# TFIDF_Output_Test = common.tf_idf(test_data)  # Returns X and Y Vals from Tfidf Vectorizer
 
 # Creating a Document Term Matrix:
 # DocTermMatrix = common.DocumentTermMatrix(training_data, TFIDF_Output[0], TFIDF_Output[1], TFIDF_Output[2])
@@ -89,7 +84,6 @@ print(training_data)
 
 # X_validate = X_validate.astype('int')
 # Y_Validate = Y_Validate.astype('int')
-# NEW
 
 # Setting variables:
 train_reviews = training_data.CleanedReview
@@ -104,7 +98,7 @@ test_sentiments = test_sentiments.astype('int')
 BOW_Training, BOW_Testing = common.BagOfWords(training_data.CleanedReview, test_data.CleanedReview)
 
 # TF-IDF:
-Vect_Training, Vect_Testing, featureNames = common.tf_idf(training_data.CleanedReview, test_data.CleanedReview)
+Vect_Training, Vect_Testing = common.tf_idf(training_data.CleanedReview, test_data.CleanedReview)
 
 # Bigram:
 BiGram_Training, BiGram_Testing = common.n_gram(2, training_data.CleanedReview, test_data.CleanedReview)
@@ -113,6 +107,8 @@ BiGram_Training, BiGram_Testing = common.n_gram(2, training_data.CleanedReview, 
 Trigram_Training, Trigram_Testing = common.n_gram(3, training_data.CleanedReview, test_data.CleanedReview)
 
 ######################## USING FEATURES TO TRAIN MODELS ########################
+
+######################## LOGISTIC REGRESSION ########################
 
 ####### Logistic Regssion Model with BOW's:
 
@@ -125,7 +121,17 @@ models.logRegression(Vect_Training, train_sentiments, Vect_Testing, test_sentime
 models.logRegression(BiGram_Training, train_sentiments, BiGram_Testing, test_sentiments, 'Bigram')
 
 ####### Logistic Regssion Model with Trigrams:
-models.logRegression(BiGram_Training, train_sentiments, BiGram_Testing, test_sentiments, 'Trigram')
+models.logRegression(Trigram_Training, train_sentiments, Trigram_Testing, test_sentiments, 'Trigram')
+
+###################### MULTINOMINAL NAIVE BAYES ######################
+
+####### Logistic Regssion Model with BOW's:
+
+models.MultiNaiveBayes(BOW_Training, train_sentiments, BOW_Testing, test_sentiments, 'BOW')
+
+
+
+
 
 
 ######## OLD CODE 

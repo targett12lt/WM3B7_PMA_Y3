@@ -2,7 +2,7 @@ from sklearn.linear_model import LogisticRegression
 from .metrics import generate_metrics
 
 def logRegression(TrainingData_X, TrainingData_Y, TestingData_X, TestingData_Y,
-                  FeatEngName):
+                  FeatEngName: str):
     '''
     Information here
     

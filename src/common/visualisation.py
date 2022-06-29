@@ -25,11 +25,19 @@ if __name__ == '__main__':
 
 def visualise_sentiment_type(dataframe):
     '''Visualises the dataframe supplied and '''
-    ax = sns.catplot(data = dataframe, x = 'PositiveReview', kind = 'count', 
+    ax = sns.catplot(data = dataframe, x = 'Sentiment', kind = 'count', 
                      palette='husl')
     ax.set(xlabel = 'Review Sentiment', ylabel = 'Number of Reviews')
-    ax.set_xticklabels(['Negative', 'Positive'])
+    # ax.set_xticklabels(['Negative', 'Positive'])
     plt.show()
+
+def visualise_fd_histogram(positive_words, negative_words):
+    '''Creates histogram sshowing frequency density and the most common words'''
+    print(type(positive_words), ' LOOK HERE ', positive_words)
+    plt.bar(positive_words.keys(), positive_words.values(), color='g')
+    # plt.bar(negative_words.keys(), negative_words.values(), color='g')
+    plt.show()
+
 
 
 
