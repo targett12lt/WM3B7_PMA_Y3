@@ -1,21 +1,13 @@
+import pandas as pd
+import nltk
+
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.preprocessing import LabelEncoder
-# from . import pre_processing
-
-
-from statistics import mean
-import pandas as pd
-
-
-import nltk
-from nltk.sentiment import SentimentAnalyzer
-
-sia = SentimentAnalyzer()
 
 # Feature engineering = process of creating features for the ML models to use for classification models
 
 # NEEDS TO INCLUDE:
-# *N-grams - Implemented NOT TESTED
+# *N-grams - WORKING
 # * TF-IDF - WORKING
 # *Bag of words approach - a way of extracting features from text for use in modelling, such as ML Algorthms
 #   - It describes the occurence of words in a document
@@ -41,43 +33,14 @@ def tf_idf(training_data, test_data):
     Vect_Training = TFIDF_Vectorizer.fit_transform(training_data)
     Vect_Testing = TFIDF_Vectorizer.transform(test_data)
     
-    # Getting Feature Names:
-    featureNames = TFIDF_Vectorizer.get_feature_names()
-
     # Printing information about datasets:
-    # Training Dataset:
     print('Vect_Training: ', Vect_Training.shape)
-
-    # Testing dataset
     print('Vect_Testing: ', Vect_Testing.shape)
 
     # General Information:
     print('IDF Info for Vectorizer: ', TFIDF_Vectorizer.idf_)
 
-    return Vect_Training, Vect_Testing, featureNames
-
-
-def DocumentTermMatrix(dataframe, X_Vals, Y_Vals, featureNames):
-    '''
-    INPUTS:
-    * X_val - 
-    * Y_val - 
-    * featureNames - 
-
-    Information about function here
-
-    OUTPUTS:
-    * something
-    '''
-    DocTerm_DF = pd.DataFrame(X_Vals.toarray(), columns=featureNames)
-    DocTerm_DF['Sentiment'] = LabelEncoder().fit_transform(dataframe['Sentiment'])
-
-    # Printing information about 'DocTerm_DF' dataframe:
-    print(DocTerm_DF.shape)
-    print(DocTerm_DF.head(10))
-
-    return DocTerm_DF
-
+    return Vect_Training, Vect_Testing
 
 def BagOfWords(training_data, test_data):
     # No need to create Term Frequency and BOW methods, as both are very similar,
