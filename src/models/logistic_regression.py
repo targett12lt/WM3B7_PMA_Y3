@@ -1,6 +1,5 @@
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, classification_report
-from .metrics import ConfusionMatrix
+from .metrics import generate_metrics
 
 def logRegression(TrainingData_X, TrainingData_Y, TestingData_X, TestingData_Y,
                   FeatEngName):
@@ -29,22 +28,8 @@ def logRegression(TrainingData_X, TrainingData_Y, TestingData_X, TestingData_Y,
     # Making predictions with model:
     prediction = lr.predict(TestingData_X)
     print(prediction)
-        
+
     # Outputting measurement metrics for model:
-    print('Accuracy Score for Logistic Regression when used with ' + FeatEngName + ': ',
-          accuracy_score(TestingData_Y, prediction))
-    print('Classification report for Logisitic Regression model when used with ' + FeatEngName + ': \n'
-          + classification_report(TestingData_Y, prediction, target_names=['Positive','Negative']))
-
-    # Generating a confusion matrix:
-    ConfusionMatrix(TestingData_Y, prediction)  # Generates a confusion matrix that is shown to the user
-
-    # logisticregression = LogisticRegression()
-    # logisticregression.fit(X_Train, Y_Train)
-    # prediction = logisticregression.predict(X_Test)
-    # print('Accuracy of Logisitc Regression: ', accuracy_score(prediction, Y_Test))
-    # print('The classification report is as follows: \n'+classification_report(prediction, Y_Test))
-
-
+    generate_metrics(TestingData_Y, prediction, 'Logistic Regression', FeatEngName)
 
    
