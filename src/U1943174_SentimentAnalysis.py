@@ -1,21 +1,13 @@
-from scipy.stats import loguniform
 import numpy as np
 
 import sklearn
-from sklearn.model_selection import RepeatedStratifiedKFold, train_test_split
+from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.linear_model import LogisticRegression
 
 import common
 import models
-import nltk
-
-nltk.download('vader_lexicon')  # required for sentiment intensity analyzer
-
-
-from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer, TfidfVectorizer
-
 
 import os
 
@@ -31,22 +23,27 @@ test_data = os.path.join(base_folder_data, 'test')
 # print('base_folder_data:', base_folder_data)  # FOR DEBUGGING PURPOSES
 
 ################################ IMPORTING DATA ################################
+# Logic to choose data import method:
+import_data = input('Would you like to import the data from the file structure (1)'
+' or the ".pkl" (2)?\nPlease enter the number of your preferred option followed'
+'by "Enter"')
 
 # If running from scratch and creating PKL:
+if '1' in import_data:
+    # Training Data:
+    print('Importing Training Data to DataFrame...')
+    training_data = common.importData(train_data)
+    common.save_to_pkl(training_data, 'TrainingData.pkl')  # Saving data to pkl so it can be opened quickly
 
-# Training Data:
-# print('Importing Training Data to DataFrame...')
-# training_data = common.importData(train_data)
-# common.save_to_pkl(training_data, 'TrainingData.pkl')  # Saving data to pkl so it can be opened quickly
+    # Test Data:
+    print('Importing Test Data to DataFrame...')
+    test_data = common.importData(test_data)
+    common.save_to_pkl(test_data, 'TestData.pkl')  # Saving data to pkl so it can be opened quickly
 
-# Test Data:
-# print('Importing Test Data to DataFrame...')
-# test_data = common.importData(test_data)
-# common.save_to_pkl(test_data, 'TestData.pkl')  # Saving data to pkl so it can be opened quickly
-
-# Importing data from PKL file to make debugging/development quicker:
-training_data = common.read_from_pkl('TrainingData.pkl')
-test_data = common.read_from_pkl('TestData.pkl')
+else:
+    # Importing data from PKL file to make debugging/development quicker:
+    training_data = common.read_from_pkl('TrainingData.pkl')
+    test_data = common.read_from_pkl('TestData.pkl')
 
 ################################ CLEANING DATA #################################
 
