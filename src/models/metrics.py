@@ -87,3 +87,9 @@ def ClassificationReport(TestingData_Y, Predictions, ModelName: str, FeatEngName
 
     return ClassificationReportMetrics
 
+# def roc_curve():
+#     '''
+#     INFORMATION HERE
+#     '''
+
+

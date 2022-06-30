@@ -1,17 +1,6 @@
-import pandas as pd
 import nltk
-
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-from sklearn.preprocessing import LabelEncoder
 
-# Feature engineering = process of creating features for the ML models to use for classification models
-
-# NEEDS TO INCLUDE:
-# *N-grams - WORKING
-# * TF-IDF - WORKING
-# *Bag of words approach - a way of extracting features from text for use in modelling, such as ML Algorthms
-#   - It describes the occurence of words in a document
-# BOW - WORKING
 
 def tf_idf(training_data, test_data):
     '''
@@ -96,6 +85,7 @@ def n_gram(n_value: int, training_data, test_data):
 
 def FrequencyDistribution(Reviews):
     # NOT THE SAME AS TERM FREQUENCY, as it is the 'Frequency Distribution'
+    # This function doesn't work yet :(
 
     '''Utilises nltk's frequency distribution function
     

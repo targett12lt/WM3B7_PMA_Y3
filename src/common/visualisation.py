@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 
 from os import environ
 
+from sklearn.metrics import plot_roc_curve, roc_curve
+
 # Space to visualise term frequency, etc.
 # compare negative vs positive sentiment in graph for basic data exploration/analysis
 
@@ -37,6 +39,10 @@ def visualise_fd_histogram(positive_words, negative_words):
     plt.bar(positive_words.keys(), positive_words.values(), color='g')
     # plt.bar(negative_words.keys(), negative_words.values(), color='g')
     plt.show()
+
+# def visualise
+#     roc_curve
+#     plot_roc_curve
 
 
 
