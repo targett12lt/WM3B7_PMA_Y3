@@ -1,14 +1,12 @@
-from statistics import mean
-from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-from sklearn.naive_bayes import BernoulliNB, ComplementNB, MultinomialNB
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.neural_network import MLPClassifier
+from scipy.stats import loguniform
+import numpy as np
+
+import sklearn
+from sklearn.model_selection import RepeatedStratifiedKFold, train_test_split
 from sklearn.pipeline import Pipeline
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
-from sklearn import *
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+from sklearn.linear_model import LogisticRegression
+
 import common
 import models
 import nltk
@@ -55,21 +53,13 @@ test_data = common.read_from_pkl('TestData.pkl')
 common.add_cleaned_column(training_data, 'Review', 'CleanedReview')
 common.add_cleaned_column(test_data, 'Review', 'CleanedReview')
 
-print('Cleaned Pandas DF:')
-print(training_data)
+print()
+print('Cleaned Pandas DF:\n', training_data)
 
 ############################### DATA EXPLORATION ###############################
 
 # NEED TO PUT SOME DATA EXPLORATION/VISUALISATION HERE
 # common.visualise_sentiment_type(training_data)
-
-############################## FEATURE ENGINEERING #############################
-
-# common.FrequencyDistribution(training_data['CleanedReview'])
-
-# Creating a Document Term Matrix:
-# DocTermMatrix = common.DocumentTermMatrix(training_data, TFIDF_Output[0], TFIDF_Output[1], TFIDF_Output[2])
-# DocTermMatrixTest = common.DocumentTermMatrix(test_data, TFIDF_Output_Test[0], TFIDF_Output_Test[1], TFIDF_Output_Test[2])
 
 ####################### SPLITTING DATA INTO TEST & TRAIN #######################
 
@@ -86,6 +76,12 @@ print(training_data)
 # Y_Validate = Y_Validate.astype('int')
 
 # Setting variables:
+
+# Defining reviews that haven't been cleaned:
+train_reviews_original = training_data.Review
+test_reviews_original = test_data.Review
+
+# Cleaned vars and sentiments:
 train_reviews = training_data.CleanedReview
 train_sentiments = training_data.Sentiment
 train_sentiments = train_sentiments.astype('int')
@@ -93,6 +89,17 @@ train_sentiments = train_sentiments.astype('int')
 test_reviews = test_data.CleanedReview
 test_sentiments = test_data.Sentiment
 test_sentiments = test_sentiments.astype('int')
+
+############################## FEATURE ENGINEERING #############################
+
+# common.FrequencyDistribution(training_data['CleanedReview'])
+
+# Creating a Document Term Matrix:
+# DocTermMatrix = common.DocumentTermMatrix(training_data, TFIDF_Output[0], TFIDF_Output[1], TFIDF_Output[2])
+# DocTermMatrixTest = common.DocumentTermMatrix(test_data, TFIDF_Output_Test[0], TFIDF_Output_Test[1], TFIDF_Output_Test[2])
+
+# BAG OF WORDS (Unigram) with no cleaning:
+Dirty_BOW_Training, Dirty_BOW_Testing =  common.BagOfWords(train_reviews_original, test_reviews_original)
 
 # BAG OF WORDS (Unigram):
 BOW_Training, BOW_Testing = common.BagOfWords(training_data.CleanedReview, test_data.CleanedReview)
@@ -109,6 +116,9 @@ Trigram_Training, Trigram_Testing = common.n_gram(3, training_data.CleanedReview
 ######################## USING FEATURES TO TRAIN MODELS ########################
 
 ######################## LOGISTIC REGRESSION ########################
+
+# LR With BOW With Dirty DATA:
+models.logRegression(Dirty_BOW_Training, train_sentiments, Dirty_BOW_Testing, test_sentiments, 'BOW Dirty')
 
 ####### Logistic Regssion Model with BOW's:
 
@@ -130,32 +140,38 @@ models.logRegression(Trigram_Training, train_sentiments, Trigram_Testing, test_s
 models.MultiNaiveBayes(BOW_Training, train_sentiments, BOW_Testing, test_sentiments, 'BOW')
 
 
+################ BUILDING PIPELINE TO OPTIMISE HYPERPARAMETERS #################
+
+# Optimising hyper parameters for Logistic Regression Model:
+import warnings
+warnings.filterwarnings('ignore')
+
+model = LogisticRegression()
+# Defining 'parameter grid':
+parameters = {
+    'penalty' : ['l1','l2'],  # Regularization of the data (not all solvers support this)
+    'C'       : [100, 10, 1.0, 0.1, 0.01],
+    'solver'  : ['newton-cg', 'lbfgs', 'liblinear'],
+}
+# define search
+clf = GridSearchCV(model, param_grid = parameters, scoring='accuracy', cv=10)
+clf.fit(Vect_Training, train_sentiments)
+# Printing results:
+print("Best: %f using %s" % (clf.best_score_, clf.best_params_))
+
+# Testing new one:
+new_log = LogisticRegression(C = 1.0, penalty = 'l2', solver = 'newton-cg')
+new_log.fit(Vect_Training, train_sentiments)
+prediction = new_log.predict(Vect_Testing)
+models.generate_metrics(test_sentiments, prediction, 'Logistic Regression with HyperParameters', 'TF-IDF')
 
 
+# for name, sklearn_classifier in classifiers.items():
+#      classifier = nltk.classify.SklearnClassifier(sklearn_classifier)
+#      classifier.train(features[:train_count])
+#      accuracy = nltk.classify.accuracy(classifier, features[train_count:])
+    #  print(F"{accuracy:.2%} - {name}")
 
-
-######## OLD CODE 
-
-# predictions = models.linRegression(X_Train, Y_Train, X_Test, Y_Test)
-# clf = Pipeline(steps =[
-#     ('preprocessing', CountVectorizer()),
-#     ('classifier', LogisticRegression(dual=False, max_iter=2000))
-# ])
-
-# # Fitting the model:
-# clf.fit(X_Train, Y_Train)
-
-# # Scoring them:
-# # clf.score(X_valid, Y_valid)
-
-
-# clf.score(X_Test,Y_Test)
-
-# from nltk.sentiment import SentimentIntensityAnalyzer
-
-# sia = SentimentIntensityAnalyzer()
-
-# # Specifying classifiers:
 # classifiers = {
 #     "BernoulliNB": BernoulliNB(),
 #     "ComplementNB": ComplementNB(),
@@ -168,58 +184,18 @@ models.MultiNaiveBayes(BOW_Training, train_sentiments, BOW_Testing, test_sentime
 #     "AdaBoostClassifier": AdaBoostClassifier(),
 # }
 
-# Getting positive and negative FD's:
-# positive_fd = nltk.FreqDist(training_data[training_data['Sentiment'] == 'Positive'])
-# negative_fd = nltk.FreqDist(training_data[training_data['Sentiment'] == 'Negative'])
+FeatEng_Training, FeatEng_Testing = '', ''
 
-# common_set = set(positive_fd).intersection(negative_fd)
+model_names = {
+    'Logistic Regression': models.logRegression(FeatEng_Training, train_sentiments, FeatEng_Testing, test_sentiments, '{}'),
+    'Multinominal Naive Bayes': models.MultiNaiveBayes(FeatEng_Training, train_sentiments, FeatEng_Testing, test_sentiments, '{}')
+}
 
-# for word in common_set:
-#     del positive_fd[word]
-#     del negative_fd[word]
+methods = {
+    '':"",
+}
 
-# Using Frequency Density to get 100 most positive and negative words:
-# top_100_positive = {word for word, count in positive_fd.most_common(100)}
-# top_100_negative = {word for word, count in negative_fd.most_common(100)}
-
-# common.visualise_fd_histogram(top_100_positive, top_100_negative)
-
-# def extract_features(text):
-#     features = dict()
-#     wordcount = 0
-#     compound_scores = list()
-#     positive_scores = list()
-
-#     for sentence in nltk.sent_tokenize(text):
-#         for word in nltk.word_tokenize(sentence):
-#             if word.lower() in top_100_positive:
-#                 wordcount += 1
-#         compound_scores.append(sia.polarity_scores(sentence)["compound"])
-#         positive_scores.append(sia.polarity_scores(sentence)["pos"])
-
-#     # Adding 1 to the final compound score to always have positive numbers
-#     # since some classifiers you'll use later don't work with negative numbers.
-#     features["mean_compound"] = mean(compound_scores) + 1
-#     features["mean_positive"] = mean(positive_scores)
-#     features["wordcount"] = wordcount
-
-#     return features
-
-# features = [
-#     (extract_features(training_data[training_data['Sentiment'] == 'Positive'])
-#     for review in training_data[training_data['Sentiment'] == 'Positive'])
-# ]
-# features.extend([
-#     (extract_features(training_data[training_data['Sentiment'] == 'Negative'])
-#     for review in training_data[training_data['Sentiment'] == 'Negative'])
-# ])
-
-# # Looping through classifiers:
-# train_count = len(features)
-
-# for name, sklearn_classifier in classifiers.items():
-#      classifier = nltk.classify.SklearnClassifier(sklearn_classifier)
-#      classifier.train(features[:train_count])
-#      accuracy = nltk.classify.accuracy(classifier, features[train_count:])
-#      print(F"{accuracy:.2%} - {name}")
-
+for feature_engineering_method, function in methods.items():
+    FeatEng_Training, FeatEng_Testing =  common.BagOfWords(train_reviews_original, test_reviews_original)
+    for name, sklearn_classifier in model_names.items():
+        pass
