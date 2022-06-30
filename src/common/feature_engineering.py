@@ -92,7 +92,7 @@ def n_gram(n_value: int, training_data, test_data):
     print('Amount of Non-Zero occurences: ', ngram_Testing.nnz)
     print('Sparsity of matrix: ', (100.0 * ngram_Testing.nnz / (ngram_Testing.shape[0] * ngram_Testing.shape[1])))
 
-    return ngram_Training, ngram_Testing  
+    return ngram_Training, ngram_Testing
 
 def FrequencyDistribution(Reviews):
     # NOT THE SAME AS TERM FREQUENCY, as it is the 'Frequency Distribution'
@@ -111,10 +111,4 @@ def FrequencyDistribution(Reviews):
     print(fd)
     print('Most common: ', most_common, '\n\n\n\n')
     print('Tabulated: ', fd.tabulate(5))
-
-def word_count(dataframe):
-    '''Counts the number of words in a document and returns the value'''
-    dataframe['WordCount']  = dataframe['Review'].apply(lambda val: len(str(val).split(' ')))
-
-    print('Hello world')
 
