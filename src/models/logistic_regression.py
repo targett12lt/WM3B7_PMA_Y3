@@ -1,6 +1,6 @@
-from sklearn.linear_model import LogisticRegression
-from matplotlib import pyplot as plt
 from .metrics import generate_metrics
+
+from sklearn.linear_model import LogisticRegression
 
 def logRegression(TrainingFeatures, TrainingSentiment, TestingFeatures, TestingSentiment,
                   FeatEngName: str):

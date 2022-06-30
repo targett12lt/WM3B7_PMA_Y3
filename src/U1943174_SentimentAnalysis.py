@@ -1,20 +1,21 @@
-import numpy as np
-
-# NEED TO ADD CROSS VALIDATION 
-from sklearn.model_selection import cross_validate
-
-import sklearn
-from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
-from sklearn.linear_model import LogisticRegression
-from sklearn.naive_bayes import MultinomialNB # Suitable for classification with discrete features, can work with td-idf but made for integer counts ideally
-
 import common
 import models
 
+import numpy as np
 import os
 import warnings
+
+# Sklearn imports:
+from sklearn.model_selection import cross_validate
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import GridSearchCV
+from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import MultinomialNB # Suitable for classification with discrete features, can work with td-idf but made for integer counts ideally
+
+# NEED TO ADD CROSS VALIDATION 
+
+# X Add comment here about why this is needed:
 warnings.filterwarnings('ignore')
 
 # Getting file path to data:
@@ -35,7 +36,7 @@ print(model.get_params().keys())
 # Logic to choose data import method:
 import_data = input('Would you like to import the data from the file structure (1)'
 ' or the ".pkl" (2)?\n\nPlease enter the number of your preferred option followed'
-' by "Enter":')
+' by "Enter": ')
 
 # If running from scratch and creating PKL:
 if '1' in import_data:
@@ -142,14 +143,18 @@ models.logRegression(Bigram_Training, train_sentiments, Bigram_Testing, test_sen
 ####### Logistic Regssion Model with Trigrams:
 models.logRegression(Trigram_Training, train_sentiments, Trigram_Testing, test_sentiments, 'Trigram')
 
-###################### MULTINOMINAL NAIVE BAYES ######################
+##################### MULTINOMINAL NAIVE BAYES ######################
 
-####### MULTINOMINAL Naive Bayes Model with DIRTY Data:
+###### Multinominal Naive Bayes Model with DIRTY Data:
 models.MultiNaiveBayes(Dirty_BOW_Training, train_sentiments, Dirty_BOW_Testing, test_sentiments, 'BOW Dirty')
 
-####### MULTINOMINAL Naive Bayes Model with BOW's:
+####### Multinominal Naive Bayes Model with BOW's:
 models.MultiNaiveBayes(BOW_Training, train_sentiments, BOW_Testing, test_sentiments, 'BOW')
 
+############################# LINEAR SVC #############################
+
+####### Linear SVC with Bag of Words:
+models.LinSVC(BOW_Training, train_sentiments, BOW_Testing, test_sentiments, 'BOW')
 
 ############# OPTIMISING HYPERPARAMETERS FOR LOGISTIC REGRESSION ###############
 
