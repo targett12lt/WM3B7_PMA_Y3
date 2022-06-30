@@ -1,15 +1,21 @@
 import numpy as np
 
+# NEED TO ADD CROSS VALIDATION 
+from sklearn.model_selection import cross_validate
+
 import sklearn
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import MultinomialNB # Suitable for classification with discrete features, can work with td-idf but made for integer counts ideally
 
 import common
 import models
 
 import os
+import warnings
+warnings.filterwarnings('ignore')
 
 # Getting file path to data:
 os.chdir('....')  # Changing the working directory from script directory
@@ -22,11 +28,14 @@ test_data = os.path.join(base_folder_data, 'test')
 
 # print('base_folder_data:', base_folder_data)  # FOR DEBUGGING PURPOSES
 
+model = MultinomialNB()
+print(model.get_params().keys())
+
 ################################ IMPORTING DATA ################################
 # Logic to choose data import method:
 import_data = input('Would you like to import the data from the file structure (1)'
-' or the ".pkl" (2)?\nPlease enter the number of your preferred option followed'
-'by "Enter"')
+' or the ".pkl" (2)?\n\nPlease enter the number of your preferred option followed'
+' by "Enter":')
 
 # If running from scratch and creating PKL:
 if '1' in import_data:
@@ -89,6 +98,9 @@ test_sentiments = test_sentiments.astype('int')
 
 ############################## FEATURE ENGINEERING #############################
 
+
+'''The data should be split here before feature engineering begins ******************LOOOOOOK AT ME************************'''
+
 # common.FrequencyDistribution(training_data['CleanedReview'])
 
 # Creating a Document Term Matrix:
@@ -105,7 +117,7 @@ BOW_Training, BOW_Testing = common.BagOfWords(training_data.CleanedReview, test_
 Vect_Training, Vect_Testing = common.tf_idf(training_data.CleanedReview, test_data.CleanedReview)
 
 # Bigram:
-BiGram_Training, BiGram_Testing = common.n_gram(2, training_data.CleanedReview, test_data.CleanedReview)
+Bigram_Training, Bigram_Testing = common.n_gram(2, training_data.CleanedReview, test_data.CleanedReview)
 
 # Trigram:
 Trigram_Training, Trigram_Testing = common.n_gram(3, training_data.CleanedReview, test_data.CleanedReview)
@@ -114,7 +126,7 @@ Trigram_Training, Trigram_Testing = common.n_gram(3, training_data.CleanedReview
 
 ######################## LOGISTIC REGRESSION ########################
 
-# LR With BOW With Dirty DATA:
+# LR With BOW With DIRTY Data:
 models.logRegression(Dirty_BOW_Training, train_sentiments, Dirty_BOW_Testing, test_sentiments, 'BOW Dirty')
 
 ####### Logistic Regssion Model with BOW's:
@@ -125,35 +137,36 @@ models.logRegression(BOW_Training, train_sentiments, BOW_Testing, test_sentiment
 models.logRegression(Vect_Training, train_sentiments, Vect_Testing, test_sentiments, 'TF-IDF')
 
 ####### Logistic Regssion Model with Bigrams:
-models.logRegression(BiGram_Training, train_sentiments, BiGram_Testing, test_sentiments, 'Bigram')
+models.logRegression(Bigram_Training, train_sentiments, Bigram_Testing, test_sentiments, 'Bigram')
 
 ####### Logistic Regssion Model with Trigrams:
 models.logRegression(Trigram_Training, train_sentiments, Trigram_Testing, test_sentiments, 'Trigram')
 
 ###################### MULTINOMINAL NAIVE BAYES ######################
 
-####### Logistic Regssion Model with BOW's:
+####### MULTINOMINAL Naive Bayes Model with DIRTY Data:
+models.MultiNaiveBayes(Dirty_BOW_Training, train_sentiments, Dirty_BOW_Testing, test_sentiments, 'BOW Dirty')
 
+####### MULTINOMINAL Naive Bayes Model with BOW's:
 models.MultiNaiveBayes(BOW_Training, train_sentiments, BOW_Testing, test_sentiments, 'BOW')
 
 
-################ BUILDING PIPELINE TO OPTIMISE HYPERPARAMETERS #################
+############# OPTIMISING HYPERPARAMETERS FOR LOGISTIC REGRESSION ###############
 
 # Optimising hyper parameters for Logistic Regression Model:
-import warnings
-warnings.filterwarnings('ignore')
-
 model = LogisticRegression()
+
 # Defining 'parameter grid':
 parameters = {
     'penalty' : ['l1','l2'],  # Regularization of the data (not all solvers support this)
     'C'       : [100, 10, 1.0, 0.1, 0.01],
     'solver'  : ['newton-cg', 'lbfgs', 'liblinear'],
 }
-# define search
-clf = GridSearchCV(model, param_grid = parameters, scoring='accuracy', cv=10)
+# Defining the Grid Search function with the desired parameters:
+clf = GridSearchCV(model, param_grid = parameters, scoring = 'accuracy', cv = 10)
 clf.fit(Vect_Training, train_sentiments)
-# Printing results:
+
+# Printing the best score and parameters:
 print("Best: %f using %s" % (clf.best_score_, clf.best_params_))
 
 # Testing new one:
@@ -161,6 +174,37 @@ new_log = LogisticRegression(C = 1.0, penalty = 'l2', solver = 'newton-cg')
 new_log.fit(Vect_Training, train_sentiments)
 prediction = new_log.predict(Vect_Testing)
 models.generate_metrics(test_sentiments, prediction, 'Logistic Regression with HyperParameters', 'TF-IDF')
+
+########### OPTIMISING HYPERPARAMETERS FOR MULTINOMINAL NAIVE BAYES ############
+
+# Optimising hyper parameters for Logistic Regression Model:
+model = MultinomialNB()
+
+# Defining 'parameter grid' for MultinominalNB:
+params_NB = {'alpha': np.logspace(0,-9, num=100)}
+# High alpha -> Underfitting
+# Low alpha -> Overfitting
+
+# Defining the Grid Search function with the desired parameters:
+clf_nb = GridSearchCV(model, param_grid = params_NB, scoring = 'accuracy', cv = 10)
+
+clf_nb.fit(Vect_Training, train_sentiments)
+
+# Printing the best score and parameters:
+print("Best: %f using %s" % (clf_nb.best_score_, clf_nb.best_params_))
+
+# Testing new one:
+new_NB = MultinomialNB(alpha=1.0)
+new_NB.fit(Vect_Training, train_sentiments)
+prediction = new_NB.predict(Vect_Testing)
+models.generate_metrics(test_sentiments, prediction, 'Multinominal Naive Bayes with HyperParameters', 'TF-IDF')
+
+################## TESTING TUNED ALGORITHMS ON TESTING DATA ####################
+
+
+'''Need to use the testing data here and output it's efficiency'''
+
+########### OLD STUFF IGNORE ME :D ############
 
 
 # for name, sklearn_classifier in classifiers.items():
@@ -181,18 +225,18 @@ models.generate_metrics(test_sentiments, prediction, 'Logistic Regression with H
 #     "AdaBoostClassifier": AdaBoostClassifier(),
 # }
 
-FeatEng_Training, FeatEng_Testing = '', ''
+# FeatEng_Training, FeatEng_Testing = '', ''
 
-model_names = {
-    'Logistic Regression': models.logRegression(FeatEng_Training, train_sentiments, FeatEng_Testing, test_sentiments, '{}'),
-    'Multinominal Naive Bayes': models.MultiNaiveBayes(FeatEng_Training, train_sentiments, FeatEng_Testing, test_sentiments, '{}')
-}
+# model_names = {
+#     'Logistic Regression': models.logRegression(FeatEng_Training, train_sentiments, FeatEng_Testing, test_sentiments, '{}'),
+#     'Multinominal Naive Bayes': models.MultiNaiveBayes(FeatEng_Training, train_sentiments, FeatEng_Testing, test_sentiments, '{}')
+# }
 
-methods = {
-    '':"",
-}
+# methods = {
+#     '':"",
+# }
 
-for feature_engineering_method, function in methods.items():
-    FeatEng_Training, FeatEng_Testing =  common.BagOfWords(train_reviews_original, test_reviews_original)
-    for name, sklearn_classifier in model_names.items():
-        pass
+# for feature_engineering_method, function in methods.items():
+    # FeatEng_Training, FeatEng_Testing =  common.BagOfWords(train_reviews_original, test_reviews_original)
+#     for name, sklearn_classifier in model_names.items():
+#         pass
