@@ -1,7 +1,7 @@
 from sklearn.naive_bayes import MultinomialNB # Suitable for classification with discrete features, can work with td-idf but made for integer counts ideally
 from .metrics import generate_metrics
 
-def MultiNaiveBayes(TrainingData_X, TrainingData_Y, TestingData_X, TestingData_Y,
+def MultiNaiveBayes(TrainingFeatures, TrainingSentiment, TestingFeatures, TestingSentiment,
                     FeatEngName: str):
     '''
     Information here
@@ -20,15 +20,15 @@ def MultiNaiveBayes(TrainingData_X, TrainingData_Y, TestingData_X, TestingData_Y
 
     '''
     nb = MultinomialNB()
-    nb_trained = nb.fit(TrainingData_X, TrainingData_Y)
+    nb_trained = nb.fit(TrainingFeatures, TrainingSentiment)
 
     # Checking that model has been trained correctly:
     print(nb_trained)
 
     # Making Predictions with model:
-    prediction = nb.predict(TestingData_X)
+    prediction = nb.predict(TestingFeatures)
     print(prediction)
 
     # Outputting measurement metrics for model:
-    generate_metrics(TestingData_Y, prediction, 'Multinominal Naive Bayes', FeatEngName)
+    generate_metrics(TestingSentiment, prediction, 'Multinominal Naive Bayes', FeatEngName)
 
