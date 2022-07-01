@@ -31,7 +31,7 @@ def logRegression(TrainingFeatures, TrainingSentiment, TestingFeatures, TestingS
   print(prediction)
 
   # Outputting measurement metrics for model:
-  if hyperParameters:
+  if len(hyperParameters) == 0:
     generate_metrics(TestingSentiment, prediction, 'Logistic Regression', FeatEngName)
   else:
     generate_metrics(TestingSentiment, prediction, 'Logistic Regression with Hyperparameters', FeatEngName)

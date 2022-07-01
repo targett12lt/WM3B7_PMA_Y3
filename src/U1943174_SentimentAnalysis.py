@@ -7,11 +7,13 @@ import numpy as np
 import os
 import warnings
 
+# Sklearn Imports:
 from sklearn.model_selection import cross_validate
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import LogisticRegression
+from sklearn.svm import LinearSVC
 from sklearn.naive_bayes import MultinomialNB
 
 # NEED TO ADD CROSS VALIDATION 
@@ -27,8 +29,6 @@ base_folder_data = os.path.join(cwd, r'data\aclImdb')  # Specifying base data di
 # Setting folders for training and testing data:
 train_data = os.path.join(base_folder_data, 'train')
 test_data = os.path.join(base_folder_data, 'test')
-
-# print('base_folder_data:', base_folder_data)  # FOR DEBUGGING PURPOSES
 
 model = MultinomialNB()
 print(model.get_params().keys())
@@ -69,34 +69,16 @@ print('Cleaned Pandas DF:\n', training_data)
 # NEED TO PUT SOME DATA EXPLORATION/VISUALISATION HERE
 # common.visualise_sentiment_type(training_data)
 
-####################### SPLITTING DATA INTO TEST & TRAIN #######################
+##################### SPLITTING DATA INTO TRAIN & VALIDATE #####################
 
-# X_Train, Y_Train = DocTermMatrix.drop(['Sentiment'], axis = 1), DocTermMatrix['Sentiment']
-# X_Test, Y_Test = DocTermMatrixTest.drop(['Sentiment'], axis = 1), DocTermMatrixTest['Sentiment']
+X_train, X_validate, Y_train, Y_validate = train_test_split(training_data.CleanedReview, training_data.Sentiment, test_size=0.15, random_state=42)
 
-# Testing using original data:
-# X_Train, Y_Train = training_data.drop(['Sentiment'], axis = 1), training_data['Sentiment']
-# X_Test, Y_Test = test_data.drop(['Sentiment'], axis = 1), test_data['Sentiment']
-
-# X_train, X_validate, Y_train, Y_Validate = train_test_split(training_data.CleanedReview, training_data.Sentiment, test_size=0.2, random_state=42)
-
-# X_validate = X_validate.astype('int')
-# Y_Validate = Y_Validate.astype('int')
-
-# Setting variables:
+Y_train = Y_train.astype('int')
+Y_validate = Y_validate.astype('int')
 
 # Defining reviews that haven't been cleaned:
 train_reviews_original = training_data.Review
 test_reviews_original = test_data.Review
-
-# Cleaned vars and sentiments:
-train_reviews = training_data.CleanedReview
-train_sentiments = training_data.Sentiment
-train_sentiments = train_sentiments.astype('int')
-
-test_reviews = test_data.CleanedReview
-test_sentiments = test_data.Sentiment
-test_sentiments = test_sentiments.astype('int')
 
 ############################## FEATURE ENGINEERING #############################
 
@@ -106,54 +88,76 @@ test_sentiments = test_sentiments.astype('int')
 Dirty_BOW_Training, Dirty_BOW_Testing =  common.BagOfWords(train_reviews_original, test_reviews_original)
 
 # BAG OF WORDS (Unigram):
-BOW_Training, BOW_Testing = common.BagOfWords(training_data.CleanedReview, test_data.CleanedReview)
+BOW_Training, BOW_Testing = common.BagOfWords(X_train, X_validate)
 
 # TF-IDF:
-Vect_Training, Vect_Testing = common.tf_idf(training_data.CleanedReview, test_data.CleanedReview)
+Vect_Training, Vect_Testing = common.tf_idf(X_train, X_validate)
 
 # Bigram:
-Bigram_Training, Bigram_Testing = common.n_gram(2, training_data.CleanedReview, test_data.CleanedReview)
+Bigram_Training, Bigram_Testing = common.n_gram(2, X_train, X_validate)
 
 # Trigram:
-Trigram_Training, Trigram_Testing = common.n_gram(3, training_data.CleanedReview, test_data.CleanedReview)
+Trigram_Training, Trigram_Testing = common.n_gram(3, X_train, X_validate)
 
 ######################## USING FEATURES TO TRAIN MODELS ########################
 
 ######################## LOGISTIC REGRESSION ########################
 
-# # LR With BOW With DIRTY Data:
-# models.logRegression(Dirty_BOW_Training, train_sentiments, Dirty_BOW_Testing, test_sentiments, 'BOW Dirty')
+# LR With BOW With DIRTY Data:
+models.logRegression(Dirty_BOW_Training, Y_train, Dirty_BOW_Testing, Y_validate, 'BOW Dirty')
 
 ####### Logistic Regssion Model with BOW's:
+models.logRegression(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW')
 
-models.logRegression(BOW_Training, train_sentiments, BOW_Testing, test_sentiments, 'BOW')
+####### Logistic Regssion Model with TF-IDF:
+models.logRegression(Vect_Training, Y_train, Vect_Testing, Y_validate, 'TF-IDF')
 
-# ####### Logistic Regssion Model with TF-IDF:
-# models.logRegression(Vect_Training, train_sentiments, Vect_Testing, test_sentiments, 'TF-IDF')
+####### Logistic Regssion Model with Bigrams:
+models.logRegression(Bigram_Training, Y_train, Bigram_Testing, Y_validate, 'Bigram')
 
-# ####### Logistic Regssion Model with Bigrams:
-# models.logRegression(Bigram_Training, train_sentiments, Bigram_Testing, test_sentiments, 'Bigram')
+####### Logistic Regssion Model with Trigrams:
+models.logRegression(Trigram_Training, Y_train, Trigram_Testing, Y_validate, 'Trigram')
 
-# ####### Logistic Regssion Model with Trigrams:
-# models.logRegression(Trigram_Training, train_sentiments, Trigram_Testing, test_sentiments, 'Trigram')
+##################### MULTINOMINAL NAIVE BAYES ######################
 
-# ##################### MULTINOMINAL NAIVE BAYES ######################
+###### Multinominal Naive Bayes Model with DIRTY Data:
+models.MultiNaiveBayes(Dirty_BOW_Training, Y_train, Dirty_BOW_Testing, Y_validate, 'BOW Dirty')
 
-# ###### Multinominal Naive Bayes Model with DIRTY Data:
-# models.MultiNaiveBayes(Dirty_BOW_Training, train_sentiments, Dirty_BOW_Testing, test_sentiments, 'BOW Dirty')
+####### Multinominal Naive Bayes Model with BOW's:
+models.MultiNaiveBayes(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW')
 
-# ####### Multinominal Naive Bayes Model with BOW's:
-# models.MultiNaiveBayes(BOW_Training, train_sentiments, BOW_Testing, test_sentiments, 'BOW')
+####### Multinominal Naive Bayes Model with TF-IDF:
+models.MultiNaiveBayes(Vect_Training, Y_train, Vect_Testing, Y_validate, 'TF-IDF')
 
-# ############################# LINEAR SVC #############################
+####### Multinominal Naive Bayes Model with Bigrams:
+models.MultiNaiveBayes(Bigram_Training, Y_train, Bigram_Testing, Y_validate, 'Bigram')
 
-# ####### Linear SVC with Bag of Words:
-# models.LinSVC(BOW_Training, train_sentiments, BOW_Testing, test_sentiments, 'BOW')
+####### Multinominal Naive Bayes Model with Trigrams:
+models.MultiNaiveBayes(Trigram_Training, Y_train, Trigram_Testing, Y_validate, 'Trigram')
 
-############# OPTIMISING HYPERPARAMETERS FOR LOGISTIC REGRESSION ###############
+############################ LINEAR SVC #############################
 
-# Optimising hyper parameters for Logistic Regression Model:
-# Defining 'parameter grid':
+###### Linear SVC Model with DIRTY Data:
+models.LinSVC(Dirty_BOW_Training, Y_train, Dirty_BOW_Testing, Y_validate, 'BOW Dirty')
+
+####### Linear SVC with Bag of Words:
+models.LinSVC(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW')
+
+####### Linear SVC Model with TF-IDF:
+models.LinSVC(Vect_Training, Y_train, Vect_Testing, Y_validate, 'TF-IDF')
+
+####### Linear SVC Model with Bigrams:
+models.LinSVC(Bigram_Training, Y_train, Bigram_Testing, Y_validate, 'Bigram')
+
+####### Linear SVC Model with Trigrams:
+models.LinSVC(Trigram_Training, Y_train, Trigram_Testing, Y_validate, 'Trigram')
+
+############ OPTIMISING HYPERPARAMETERS FOR LOGISTIC REGRESSION ###############
+
+# Creating Logistic Regression Model:
+model = LogisticRegression()
+
+# Defining 'parameter grid' for Logisitic Regression:
 parameters = {
     'penalty' : ['l1','l2'],  # Regularization of the data (not all solvers support this)
     'C'       : [100, 10, 1.0, 0.1, 0.01],
@@ -161,17 +165,17 @@ parameters = {
 }
 # Defining the Grid Search function with the desired parameters:
 clf = GridSearchCV(model, param_grid = parameters, scoring = 'accuracy', cv = 10)
-clf.fit(Vect_Training, train_sentiments)
+clf.fit(Vect_Training, Y_train)
 
-# Printing the best score and parameters:
-print("Best: %f using %s" % (clf.best_params_))
+# Printing the best parameters:
+print("Best score achieved using %s" % (clf.best_params_))
 
-# Testing new one:
-models.logRegression(BOW_Training, train_sentiments, BOW_Testing, test_sentiments, 'BOW', **clf.best_params_)
+# Testing the new one on the validation data:
+models.logRegression(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf.best_params_)
 
 ########### OPTIMISING HYPERPARAMETERS FOR MULTINOMINAL NAIVE BAYES ############
 
-# Optimising hyper parameters for Logistic Regression Model:
+# Creating Multinominal Naive Bayes:
 model = MultinomialNB()
 
 # Defining 'parameter grid' for MultinominalNB:
@@ -182,52 +186,49 @@ params_NB = {'alpha': np.logspace(0,-9, num=100)}
 # Defining the Grid Search function with the desired parameters:
 clf_nb = GridSearchCV(model, param_grid = params_NB, scoring = 'accuracy', cv = 10)
 
-clf_nb.fit(Vect_Training, train_sentiments)
+clf_nb.fit(Vect_Training, Y_train)
+
+# Printing the best parameters:
+print("Best score achieved using %s" % (clf_nb.best_params_))
+
+# Testing the new one on the validation data:
+models.MultiNaiveBayes(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf_nb.best_params_)
+
+################## OPTIMISING HYPERPARAMETERS FOR LINEAR SVC ###################
+
+# Creating Linear SVC:
+model_svc = LinearSVC()
+
+# Defining 'parameter grid' for Linear SVC:
+parameters_linear_svc = {
+    'penalty' : ['l1','l2'],  # Regularization of the data (not all solvers support this)
+    'loss': ['hinge', 'squared_hinge'],
+    'C'       : [100, 10, 1.0, 0.1, 0.01],
+}
+
+# Defining the Grid Search function with the desired parameters:
+clf_svc = GridSearchCV(model_svc, param_grid = parameters_linear_svc, scoring = 'accuracy', cv = 10)
+
+clf_svc.fit(Vect_Training, Y_train)
 
 # Printing the best score and parameters:
-print("Best: %f using %s" % (clf_nb.best_params_))
+print("Best score achieved using %s" % (clf_svc.best_params_))
 
 # Testing new one:
-models.MultiNaiveBayes(BOW_Training, train_sentiments, BOW_Testing, test_sentiments, 'BOW', **clf_nb.best_params_)
+models.LinSVC(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf_svc.best_params_)
 
 ################## TESTING TUNED ALGORITHMS ON TESTING DATA ####################
 
-
 '''Need to use the testing data here and output it's efficiency'''
 
-########### OLD STUFF IGNORE ME :D ############
+#### Setting variables for test data:
 
+test_reviews = test_data.CleanedReview
+test_sentiments = test_data.Sentiment
+test_sentiments = test_sentiments.astype('int')
 
-# for name, sklearn_classifier in classifiers.items():
-#      classifier = nltk.classify.SklearnClassifier(sklearn_classifier)
-#      classifier.train(features[:train_count])
-#      accuracy = nltk.classify.accuracy(classifier, features[train_count:])
-    #  print(F"{accuracy:.2%} - {name}")
+# Measuring model on test dataset using the three models:
+models.logRegression(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf.best_params_)
+models.MultiNaiveBayes(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf_nb.best_params_)
+models.LinSVC(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf_svc.best_params_)
 
-# classifiers = {
-#     "BernoulliNB": BernoulliNB(),
-#     "ComplementNB": ComplementNB(),
-#     "MultinomialNB": MultinomialNB(),
-#     "KNeighborsClassifier": KNeighborsClassifier(),
-#     "DecisionTreeClassifier": DecisionTreeClassifier(),
-#     "RandomForestClassifier": RandomForestClassifier(),
-#     "LogisticRegression": LogisticRegression(),
-#     "MLPClassifier": MLPClassifier(max_iter=1000),
-#     "AdaBoostClassifier": AdaBoostClassifier(),
-# }
-
-# FeatEng_Training, FeatEng_Testing = '', ''
-
-# model_names = {
-#     'Logistic Regression': models.logRegression(FeatEng_Training, train_sentiments, FeatEng_Testing, test_sentiments, '{}'),
-#     'Multinominal Naive Bayes': models.MultiNaiveBayes(FeatEng_Training, train_sentiments, FeatEng_Testing, test_sentiments, '{}')
-# }
-
-# methods = {
-#     '':"",
-# }
-
-# for feature_engineering_method, function in methods.items():
-    # FeatEng_Training, FeatEng_Testing =  common.BagOfWords(train_reviews_original, test_reviews_original)
-#     for name, sklearn_classifier in model_names.items():
-#         pass

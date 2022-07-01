@@ -30,7 +30,7 @@ def MultiNaiveBayes(TrainingFeatures, TrainingSentiment, TestingFeatures, Testin
     print(prediction)
 
     # Outputting measurement metrics for model:
-    if hyperParameters:
+    if len(hyperParameters) == 0:
       generate_metrics(TestingSentiment, prediction, 'Multinominal Naive Bayes', FeatEngName)
     else:
       generate_metrics(TestingSentiment, prediction, 'Multinominal Naive Bayes with Hyperparameters', FeatEngName)

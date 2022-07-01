@@ -22,9 +22,10 @@ def LinSVC(TrainingFeatures, TrainingSentiment, TestingFeatures, TestingSentimen
         sentiment)
     * TestingSentiment - 
     * FeatEngName -
+    ** hyperParameters - 
 
     Outputs: 
-    *
+    * Terminal Output of metrics & Pyplot of Confusion Matrix
     '''
     lin = LinearSVC(**hyperParameters)
     lin_trained = lin.fit(TrainingFeatures, TrainingSentiment)
@@ -37,7 +38,7 @@ def LinSVC(TrainingFeatures, TrainingSentiment, TestingFeatures, TestingSentimen
     print(prediction)
 
     # Outputting measurement metrics for model:
-    if hyperParameters:
+    if len(hyperParameters) == 0:
         generate_metrics(TestingSentiment, prediction, 'Linear SVC', FeatEngName)
     else:
         generate_metrics(TestingSentiment, prediction, 'Linear SVC with Hyperparameters', FeatEngName)
