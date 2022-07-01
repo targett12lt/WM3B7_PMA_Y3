@@ -8,7 +8,6 @@ import os
 import warnings
 
 # Sklearn Imports:
-from sklearn.model_selection import cross_validate
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
@@ -16,9 +15,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.svm import LinearSVC
 from sklearn.naive_bayes import MultinomialNB
 
-# NEED TO ADD CROSS VALIDATION 
-
-# X Add comment here about why this is needed:
+# Ignoring 'Estimator Fit Fail' warnings when using CVGrid on incorrectly configured configurations:
 warnings.filterwarnings('ignore')
 
 # Getting file path to data:
@@ -66,91 +63,93 @@ print('Cleaned Pandas DF:\n', training_data)
 
 ############################### DATA EXPLORATION ###############################
 
-# NEED TO PUT SOME DATA EXPLORATION/VISUALISATION HERE
-# common.visualise_sentiment_type(training_data)
+# Visualising the types of sentiment in the training set:
+common.visualise_sentiment_type(training_data)
 
 ##################### SPLITTING DATA INTO TRAIN & VALIDATE #####################
 
 X_train, X_validate, Y_train, Y_validate = train_test_split(training_data.CleanedReview, training_data.Sentiment, test_size=0.15, random_state=42)
 
+# Fixing Data Types:
 Y_train = Y_train.astype('int')
 Y_validate = Y_validate.astype('int')
 
 # Defining reviews that haven't been cleaned:
-train_reviews_original = training_data.Review
-test_reviews_original = test_data.Review
+X_Dirty_train, X_Dirty_validate, Y_Dirty_train, Y_Dirty_validate = train_test_split(training_data.Review, training_data.Sentiment, test_size=0.15, random_state=42)
+
+# Fixing Data Types:
+Y_Dirty_train = Y_train.astype('int')
+Y_Dirty_validate = Y_validate.astype('int')
 
 ############################## FEATURE ENGINEERING #############################
 
-'''The data should be split here before feature engineering begins ******************LOOOOOOK AT ME************************'''
-
 # BAG OF WORDS (Unigram) with no cleaning:
-Dirty_BOW_Training, Dirty_BOW_Testing =  common.BagOfWords(train_reviews_original, test_reviews_original)
+Dirty_BOW_Training, Dirty_BOW_Validate =  common.BagOfWords(X_Dirty_train, X_Dirty_validate)
 
 # BAG OF WORDS (Unigram):
-BOW_Training, BOW_Testing = common.BagOfWords(X_train, X_validate)
+BOW_Training, BOW_Validate = common.BagOfWords(X_train, X_validate)
 
 # TF-IDF:
-Vect_Training, Vect_Testing = common.tf_idf(X_train, X_validate)
+Vect_Training, Vect_Validate = common.tf_idf(X_train, X_validate)
 
 # Bigram:
-Bigram_Training, Bigram_Testing = common.n_gram(2, X_train, X_validate)
+Bigram_Training, Bigram_Validate = common.n_gram(2, X_train, X_validate)
 
 # Trigram:
-Trigram_Training, Trigram_Testing = common.n_gram(3, X_train, X_validate)
+Trigram_Training, Trigram_Validate = common.n_gram(3, X_train, X_validate)
 
 ######################## USING FEATURES TO TRAIN MODELS ########################
 
 ######################## LOGISTIC REGRESSION ########################
 
 # LR With BOW With DIRTY Data:
-models.logRegression(Dirty_BOW_Training, Y_train, Dirty_BOW_Testing, Y_validate, 'BOW Dirty')
+models.logRegression(Dirty_BOW_Training, Y_Dirty_train, Dirty_BOW_Validate, Y_Dirty_validate, 'BOW Dirty')
 
 ####### Logistic Regssion Model with BOW's:
-models.logRegression(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW')
+models.logRegression(BOW_Training, Y_train, BOW_Validate, Y_validate, 'BOW')
 
 ####### Logistic Regssion Model with TF-IDF:
-models.logRegression(Vect_Training, Y_train, Vect_Testing, Y_validate, 'TF-IDF')
+models.logRegression(Vect_Training, Y_train, Vect_Validate, Y_validate, 'TF-IDF')
 
 ####### Logistic Regssion Model with Bigrams:
-models.logRegression(Bigram_Training, Y_train, Bigram_Testing, Y_validate, 'Bigram')
+models.logRegression(Bigram_Training, Y_train, Bigram_Validate, Y_validate, 'Bigram')
 
 ####### Logistic Regssion Model with Trigrams:
-models.logRegression(Trigram_Training, Y_train, Trigram_Testing, Y_validate, 'Trigram')
+models.logRegression(Trigram_Training, Y_train, Trigram_Validate, Y_validate, 'Trigram')
 
 ##################### MULTINOMINAL NAIVE BAYES ######################
 
 ###### Multinominal Naive Bayes Model with DIRTY Data:
-models.MultiNaiveBayes(Dirty_BOW_Training, Y_train, Dirty_BOW_Testing, Y_validate, 'BOW Dirty')
+models.MultiNaiveBayes(Dirty_BOW_Training, Y_Dirty_train, Dirty_BOW_Validate, Y_Dirty_validate, 'BOW Dirty')
 
 ####### Multinominal Naive Bayes Model with BOW's:
-models.MultiNaiveBayes(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW')
+models.MultiNaiveBayes(BOW_Training, Y_train, BOW_Validate, Y_validate, 'BOW')
 
 ####### Multinominal Naive Bayes Model with TF-IDF:
-models.MultiNaiveBayes(Vect_Training, Y_train, Vect_Testing, Y_validate, 'TF-IDF')
+models.MultiNaiveBayes(Vect_Training, Y_train, Vect_Validate, Y_validate, 'TF-IDF')
 
 ####### Multinominal Naive Bayes Model with Bigrams:
-models.MultiNaiveBayes(Bigram_Training, Y_train, Bigram_Testing, Y_validate, 'Bigram')
+models.MultiNaiveBayes(Bigram_Training, Y_train, Bigram_Validate, Y_validate, 'Bigram')
 
 ####### Multinominal Naive Bayes Model with Trigrams:
-models.MultiNaiveBayes(Trigram_Training, Y_train, Trigram_Testing, Y_validate, 'Trigram')
+models.MultiNaiveBayes(Trigram_Training, Y_train, Trigram_Validate, Y_validate, 'Trigram')
 
 ############################ LINEAR SVC #############################
 
 ###### Linear SVC Model with DIRTY Data:
-models.LinSVC(Dirty_BOW_Training, Y_train, Dirty_BOW_Testing, Y_validate, 'BOW Dirty')
+models.LinSVC(Dirty_BOW_Training, Y_Dirty_train, Dirty_BOW_Validate, Y_Dirty_validate, 'BOW Dirty')
 
 ####### Linear SVC with Bag of Words:
-models.LinSVC(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW')
+models.LinSVC(BOW_Training, Y_train, BOW_Validate, Y_validate, 'BOW')
 
 ####### Linear SVC Model with TF-IDF:
-models.LinSVC(Vect_Training, Y_train, Vect_Testing, Y_validate, 'TF-IDF')
+models.LinSVC(Vect_Training, Y_train, Vect_Validate, Y_validate, 'TF-IDF')
 
 ####### Linear SVC Model with Bigrams:
-models.LinSVC(Bigram_Training, Y_train, Bigram_Testing, Y_validate, 'Bigram')
+models.LinSVC(Bigram_Training, Y_train, Bigram_Validate, Y_validate, 'Bigram')
 
 ####### Linear SVC Model with Trigrams:
-models.LinSVC(Trigram_Training, Y_train, Trigram_Testing, Y_validate, 'Trigram')
+models.LinSVC(Trigram_Training, Y_train, Trigram_Validate, Y_validate, 'Trigram')
 
 ############ OPTIMISING HYPERPARAMETERS FOR LOGISTIC REGRESSION ###############
 
@@ -171,7 +170,7 @@ clf.fit(Vect_Training, Y_train)
 print("Best score achieved using %s" % (clf.best_params_))
 
 # Testing the new one on the validation data:
-models.logRegression(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf.best_params_)
+models.logRegression(BOW_Training, Y_train, BOW_Validate, Y_validate, 'BOW', **clf.best_params_)
 
 ########### OPTIMISING HYPERPARAMETERS FOR MULTINOMINAL NAIVE BAYES ############
 
@@ -192,7 +191,7 @@ clf_nb.fit(Vect_Training, Y_train)
 print("Best score achieved using %s" % (clf_nb.best_params_))
 
 # Testing the new one on the validation data:
-models.MultiNaiveBayes(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf_nb.best_params_)
+models.MultiNaiveBayes(BOW_Training, Y_train, BOW_Validate, Y_validate, 'BOW', **clf_nb.best_params_)
 
 ################## OPTIMISING HYPERPARAMETERS FOR LINEAR SVC ###################
 
@@ -204,7 +203,7 @@ parameters_linear_svc = {
     'penalty' : ['l1','l2'],  # Regularization of the data (not all solvers support this)
     'loss': ['hinge', 'squared_hinge'],
     'C'       : [100, 10, 1.0, 0.1, 0.01],
-}
+                        }
 
 # Defining the Grid Search function with the desired parameters:
 clf_svc = GridSearchCV(model_svc, param_grid = parameters_linear_svc, scoring = 'accuracy', cv = 10)
@@ -215,7 +214,7 @@ clf_svc.fit(Vect_Training, Y_train)
 print("Best score achieved using %s" % (clf_svc.best_params_))
 
 # Testing new one:
-models.LinSVC(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf_svc.best_params_)
+models.LinSVC(BOW_Training, Y_train, BOW_Validate, Y_validate, 'BOW', **clf_svc.best_params_)
 
 ################## TESTING TUNED ALGORITHMS ON TESTING DATA ####################
 
@@ -223,12 +222,33 @@ models.LinSVC(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf_svc.b
 
 #### Setting variables for test data:
 
+# Reviews:
 test_reviews = test_data.CleanedReview
+test_reviews_dirty = test_data.Review
+
+# Sentiments:
 test_sentiments = test_data.Sentiment
 test_sentiments = test_sentiments.astype('int')
 
+#### Completing Feature engineering on the test data:
+
+# BAG OF WORDS (Unigram) with no cleaning:
+Dirty_BOW_Training, Dirty_BOW_Testing =  common.BagOfWords(X_Dirty_train, test_reviews_dirty)
+
+# BAG OF WORDS (Unigram):
+BOW_Training, BOW_Testing = common.BagOfWords(X_train, test_reviews)
+
+# TF-IDF:
+Vect_Training, Vect_Testing = common.tf_idf(X_train, test_reviews)
+
+# Bigram:
+Bigram_Training, Bigram_Testing = common.n_gram(2, X_train, test_reviews)
+
+# Trigram:
+Trigram_Training, Trigram_Testing = common.n_gram(3, X_train, test_reviews)
+
 # Measuring model on test dataset using the three models:
-models.logRegression(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf.best_params_)
-models.MultiNaiveBayes(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf_nb.best_params_)
-models.LinSVC(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf_svc.best_params_)
+# models.logRegression(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf.best_params_)
+# models.MultiNaiveBayes(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf_nb.best_params_)
+# models.LinSVC(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf_svc.best_params_)
 
