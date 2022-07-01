@@ -7,7 +7,7 @@ Because the implementations are different in practice you will get different res
 supports a linear kernel, is faster and can scale a lot better. HAS HIGHER PERFORMANCE THAT '''
 
 def LinSVC(TrainingFeatures, TrainingSentiment, TestingFeatures, TestingSentiment,
-           FeatEngName: str):
+           FeatEngName: str, **hyperParameters):
     '''
 
     Information here
@@ -26,7 +26,7 @@ def LinSVC(TrainingFeatures, TrainingSentiment, TestingFeatures, TestingSentimen
     Outputs: 
     *
     '''
-    lin = LinearSVC()
+    lin = LinearSVC(**hyperParameters)
     lin_trained = lin.fit(TrainingFeatures, TrainingSentiment)
 
     # Checking that model has been trained correctly:
@@ -37,6 +37,8 @@ def LinSVC(TrainingFeatures, TrainingSentiment, TestingFeatures, TestingSentimen
     print(prediction)
 
     # Outputting measurement metrics for model:
-    generate_metrics(TestingSentiment, prediction, 'Linear SVC', FeatEngName)
-
+    if hyperParameters:
+        generate_metrics(TestingSentiment, prediction, 'Linear SVC', FeatEngName)
+    else:
+        generate_metrics(TestingSentiment, prediction, 'Linear SVC with Hyperparameters', FeatEngName)
 

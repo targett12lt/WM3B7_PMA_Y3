@@ -1,17 +1,18 @@
+# Importing packages:
 import common
 import models
 
+# Importing external libraries:
 import numpy as np
 import os
 import warnings
 
-# Sklearn imports:
 from sklearn.model_selection import cross_validate
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import LogisticRegression
-from sklearn.naive_bayes import MultinomialNB # Suitable for classification with discrete features, can work with td-idf but made for integer counts ideally
+from sklearn.naive_bayes import MultinomialNB
 
 # NEED TO ADD CROSS VALIDATION 
 
@@ -99,14 +100,7 @@ test_sentiments = test_sentiments.astype('int')
 
 ############################## FEATURE ENGINEERING #############################
 
-
 '''The data should be split here before feature engineering begins ******************LOOOOOOK AT ME************************'''
-
-# common.FrequencyDistribution(training_data['CleanedReview'])
-
-# Creating a Document Term Matrix:
-# DocTermMatrix = common.DocumentTermMatrix(training_data, TFIDF_Output[0], TFIDF_Output[1], TFIDF_Output[2])
-# DocTermMatrixTest = common.DocumentTermMatrix(test_data, TFIDF_Output_Test[0], TFIDF_Output_Test[1], TFIDF_Output_Test[2])
 
 # BAG OF WORDS (Unigram) with no cleaning:
 Dirty_BOW_Training, Dirty_BOW_Testing =  common.BagOfWords(train_reviews_original, test_reviews_original)
@@ -127,40 +121,38 @@ Trigram_Training, Trigram_Testing = common.n_gram(3, training_data.CleanedReview
 
 ######################## LOGISTIC REGRESSION ########################
 
-# LR With BOW With DIRTY Data:
-models.logRegression(Dirty_BOW_Training, train_sentiments, Dirty_BOW_Testing, test_sentiments, 'BOW Dirty')
+# # LR With BOW With DIRTY Data:
+# models.logRegression(Dirty_BOW_Training, train_sentiments, Dirty_BOW_Testing, test_sentiments, 'BOW Dirty')
 
 ####### Logistic Regssion Model with BOW's:
 
 models.logRegression(BOW_Training, train_sentiments, BOW_Testing, test_sentiments, 'BOW')
 
-####### Logistic Regssion Model with TF-IDF:
-models.logRegression(Vect_Training, train_sentiments, Vect_Testing, test_sentiments, 'TF-IDF')
+# ####### Logistic Regssion Model with TF-IDF:
+# models.logRegression(Vect_Training, train_sentiments, Vect_Testing, test_sentiments, 'TF-IDF')
 
-####### Logistic Regssion Model with Bigrams:
-models.logRegression(Bigram_Training, train_sentiments, Bigram_Testing, test_sentiments, 'Bigram')
+# ####### Logistic Regssion Model with Bigrams:
+# models.logRegression(Bigram_Training, train_sentiments, Bigram_Testing, test_sentiments, 'Bigram')
 
-####### Logistic Regssion Model with Trigrams:
-models.logRegression(Trigram_Training, train_sentiments, Trigram_Testing, test_sentiments, 'Trigram')
+# ####### Logistic Regssion Model with Trigrams:
+# models.logRegression(Trigram_Training, train_sentiments, Trigram_Testing, test_sentiments, 'Trigram')
 
-##################### MULTINOMINAL NAIVE BAYES ######################
+# ##################### MULTINOMINAL NAIVE BAYES ######################
 
-###### Multinominal Naive Bayes Model with DIRTY Data:
-models.MultiNaiveBayes(Dirty_BOW_Training, train_sentiments, Dirty_BOW_Testing, test_sentiments, 'BOW Dirty')
+# ###### Multinominal Naive Bayes Model with DIRTY Data:
+# models.MultiNaiveBayes(Dirty_BOW_Training, train_sentiments, Dirty_BOW_Testing, test_sentiments, 'BOW Dirty')
 
-####### Multinominal Naive Bayes Model with BOW's:
-models.MultiNaiveBayes(BOW_Training, train_sentiments, BOW_Testing, test_sentiments, 'BOW')
+# ####### Multinominal Naive Bayes Model with BOW's:
+# models.MultiNaiveBayes(BOW_Training, train_sentiments, BOW_Testing, test_sentiments, 'BOW')
 
-############################# LINEAR SVC #############################
+# ############################# LINEAR SVC #############################
 
-####### Linear SVC with Bag of Words:
-models.LinSVC(BOW_Training, train_sentiments, BOW_Testing, test_sentiments, 'BOW')
+# ####### Linear SVC with Bag of Words:
+# models.LinSVC(BOW_Training, train_sentiments, BOW_Testing, test_sentiments, 'BOW')
 
 ############# OPTIMISING HYPERPARAMETERS FOR LOGISTIC REGRESSION ###############
 
 # Optimising hyper parameters for Logistic Regression Model:
-model = LogisticRegression()
-
 # Defining 'parameter grid':
 parameters = {
     'penalty' : ['l1','l2'],  # Regularization of the data (not all solvers support this)
@@ -172,13 +164,10 @@ clf = GridSearchCV(model, param_grid = parameters, scoring = 'accuracy', cv = 10
 clf.fit(Vect_Training, train_sentiments)
 
 # Printing the best score and parameters:
-print("Best: %f using %s" % (clf.best_score_, clf.best_params_))
+print("Best: %f using %s" % (clf.best_params_))
 
 # Testing new one:
-new_log = LogisticRegression(C = 1.0, penalty = 'l2', solver = 'newton-cg')
-new_log.fit(Vect_Training, train_sentiments)
-prediction = new_log.predict(Vect_Testing)
-models.generate_metrics(test_sentiments, prediction, 'Logistic Regression with HyperParameters', 'TF-IDF')
+models.logRegression(BOW_Training, train_sentiments, BOW_Testing, test_sentiments, 'BOW', **clf.best_params_)
 
 ########### OPTIMISING HYPERPARAMETERS FOR MULTINOMINAL NAIVE BAYES ############
 
@@ -196,13 +185,10 @@ clf_nb = GridSearchCV(model, param_grid = params_NB, scoring = 'accuracy', cv = 
 clf_nb.fit(Vect_Training, train_sentiments)
 
 # Printing the best score and parameters:
-print("Best: %f using %s" % (clf_nb.best_score_, clf_nb.best_params_))
+print("Best: %f using %s" % (clf_nb.best_params_))
 
 # Testing new one:
-new_NB = MultinomialNB(alpha=1.0)
-new_NB.fit(Vect_Training, train_sentiments)
-prediction = new_NB.predict(Vect_Testing)
-models.generate_metrics(test_sentiments, prediction, 'Multinominal Naive Bayes with HyperParameters', 'TF-IDF')
+models.MultiNaiveBayes(BOW_Training, train_sentiments, BOW_Testing, test_sentiments, 'BOW', **clf_nb.best_params_)
 
 ################## TESTING TUNED ALGORITHMS ON TESTING DATA ####################
 

@@ -2,7 +2,7 @@ from sklearn.naive_bayes import MultinomialNB # Suitable for classification with
 from .metrics import generate_metrics
 
 def MultiNaiveBayes(TrainingFeatures, TrainingSentiment, TestingFeatures, TestingSentiment,
-                    FeatEngName: str):
+                    FeatEngName: str, **hyperParameters):
     '''
     Information here
     
@@ -19,7 +19,7 @@ def MultiNaiveBayes(TrainingFeatures, TrainingSentiment, TestingFeatures, Testin
     *
 
     '''
-    nb = MultinomialNB()
+    nb = MultinomialNB(**hyperParameters)
     nb_trained = nb.fit(TrainingFeatures, TrainingSentiment)
 
     # Checking that model has been trained correctly:
@@ -30,5 +30,8 @@ def MultiNaiveBayes(TrainingFeatures, TrainingSentiment, TestingFeatures, Testin
     print(prediction)
 
     # Outputting measurement metrics for model:
-    generate_metrics(TestingSentiment, prediction, 'Multinominal Naive Bayes', FeatEngName)
+    if hyperParameters:
+      generate_metrics(TestingSentiment, prediction, 'Multinominal Naive Bayes', FeatEngName)
+    else:
+      generate_metrics(TestingSentiment, prediction, 'Multinominal Naive Bayes with Hyperparameters', FeatEngName)
 

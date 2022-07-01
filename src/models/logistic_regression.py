@@ -3,7 +3,7 @@ from .metrics import generate_metrics
 from sklearn.linear_model import LogisticRegression
 
 def logRegression(TrainingFeatures, TrainingSentiment, TestingFeatures, TestingSentiment,
-                  FeatEngName: str):
+                  FeatEngName: str, **hyperParameters):
   '''
   Information here
 
@@ -20,7 +20,7 @@ def logRegression(TrainingFeatures, TrainingSentiment, TestingFeatures, TestingS
   *
 
   '''
-  lr=LogisticRegression()
+  lr=LogisticRegression(**hyperParameters)
   lr_trained = lr.fit(TrainingFeatures, TrainingSentiment)
 
   # Checking that model has been trained correctly:
@@ -31,6 +31,9 @@ def logRegression(TrainingFeatures, TrainingSentiment, TestingFeatures, TestingS
   print(prediction)
 
   # Outputting measurement metrics for model:
-  generate_metrics(TestingSentiment, prediction, 'Logistic Regression', FeatEngName)
+  if hyperParameters:
+    generate_metrics(TestingSentiment, prediction, 'Logistic Regression', FeatEngName)
+  else:
+    generate_metrics(TestingSentiment, prediction, 'Logistic Regression with Hyperparameters', FeatEngName)
 
    
