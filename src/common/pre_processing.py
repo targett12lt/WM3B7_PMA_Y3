@@ -8,7 +8,6 @@ import pandas as pd
 # For NLP/Sentinent Analysis:
 import nltk
 
-
 # Downloading 'stopwords' and 'punk' so script can work correctly
 # Try and make this a try and except statement (checks if PC has them downloaded already, if not then downloads them?)
 nltk.download('stopwords')  # Download 'stopwords' for nltk library
@@ -39,7 +38,11 @@ def cleanText(text):
         4. Removes 'stop words' from the sentence
         5. Lemmatizes the string (normalization method to condense all forms of a word into a single representation)
 
-    ADD MORE INFORMATION ABOUT FUNCTION HERE
+    INPUTS:
+    * text - Document/Review to be cleaned in 'str' format
+
+    OUTPUTS:
+    * cleaned_string - Cleaned Document/Review in 'str' format
     '''
     # Creating Lemmatizer required to clean text:
     Lemmatizer = nltk.stem.WordNetLemmatizer() 
@@ -59,9 +62,15 @@ def cleanText(text):
 def importData(dataDirectory):
     '''Imports the data from the supplied directory "dataDirectory" and returns
     data in a list format, ensuring data is "shuffled" so positive and negative
-    reviews aren't split obviously.'''
+    reviews aren't split obviously.
+    
+    INPUTS:
+    * dataDirectory - Directory that stores all the data to be imported into dataframe
+
+    OUTPUTS:
+    * df - Dataframe containing all data from specified data directory
+    '''
     df = pd.DataFrame(columns=['Review', 'Sentiment'])
-    reviews = []  # Creating a basic structure to store data in
 
     for label in ["pos", "neg"]:
         labeled_directory = f"{dataDirectory}/{label}"
@@ -75,25 +84,38 @@ def importData(dataDirectory):
                             df.loc[df.shape[0]] = [text, 1]  # Without cleaning
                         else:
                             df.loc[df.shape[0]] = [text, 0]  # Without cleaning
-                        
-
-    # Shuffling list 'reviews' so the same type are not all next to each other
-    # df.sample(frac=1, random_state=1).reset_index()
-
+    
     return df
 
 
 def save_to_pkl(dataframe, df_name):
-    '''Saves the supplied dataframe in PKL format in the current working directory'''
+    '''Saves the supplied dataframe in PKL format in the current working 
+    directory. Function does NOT return anything!
+    
+    INPUTS:
+    * dataframe - The Pandas Dataframe that you would like saving as a '.pkl'
+    * df_name - What you'd like the '.pkl' to be called
+    '''
     dataframe.to_pickle(df_name)
 
-def read_from_pkl(pkl_location):
-    '''Creates and returns a Pandas Dataframe from a specified PKL file'''
+def read_from_pkl(pkl_name):
+    '''Creates and returns a Pandas Dataframe from a specified PKL file. 
+    Function does NOT return anything!
     
-    df = pd.read_pickle(pkl_location)
+    INPUTS: 
+    * pkl_name - Name of the '.pkl' stored in the CWD
+    '''
+    df = pd.read_pickle(pkl_name)
     return df
 
-def add_cleaned_column(dataframe, original_col_name, new_col_name, clean=True):
-    '''Adds a new column containing all the reviews but not cleaned'''
+def add_cleaned_column(dataframe, original_col_name, new_col_name):
+    '''Adds a new column containing all the reviews AFTER they have been cleaned
+    Function does NOT return anything!
+
+    INPUTS:
+    * dataframe - The dataframe that you'd like the new column in
+    * original_col_name - The column which contains the 'Reviews' in the df.
+    * new_col_name - The name of the new 'clean' column
+    '''
     dataframe[new_col_name] = dataframe[original_col_name].apply(cleanText)
 
