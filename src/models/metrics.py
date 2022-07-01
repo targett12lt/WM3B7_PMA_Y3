@@ -3,9 +3,10 @@ import pandas as pd
 import seaborn as sns
 
 # Sklearn imports:
-from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import classification_report
+
+import common
 
 
 def generate_metrics(TestingData_Y, Predictions, ModelName: str,
@@ -25,39 +26,10 @@ def generate_metrics(TestingData_Y, Predictions, ModelName: str,
     * Terminal Output of metrics & Pyplot of Confusion Matrix
     '''
     acc_score(TestingData_Y, Predictions, ModelName, FeatEngName)
-    ClassificationReport(TestingData_Y, Predictions, ModelName, FeatEngName)
-    ConfusionMatrix(TestingData_Y, Predictions, ModelName, FeatEngName)
-
-
-def ConfusionMatrix(TestingData_Y, Predictions, ModelName: str,
-                    FeatEngName: str):
-    '''
-    Generates a confusion matrix using SKLearn's "Confusion Matrix" method
-    using the supplied "Y_Test" and "Prediction".
-
-    INPUTS:
-    * TestingData_Y - Sentiments from Testing Data
-    * Predictions - Sentiments from Testing Data
-    * ModelName (str) - Name of model used to make predictions
-    * FeatEngName(str) - Name of feature engineering methods used to generate
-        metrics.
-
-    OUTPUTS:
-    * Pyplot of Confusion Matrix
-    '''
-    # Creating Confusion Matrix:
-    ConfusionMatrix = confusion_matrix(TestingData_Y, Predictions,
-                                       labels=[1, 0])
-
-    # Visualising Confusion Matrix:
-    class_label = ["Negative", "Positive"]
-    ConfusionMatrixDF = pd.DataFrame(ConfusionMatrix, index=class_label,
-                                     columns=class_label)
-    sns.heatmap(ConfusionMatrixDF, annot=True, fmt="d")
-    plt.title("Confusion Matrix for " + ModelName + ': ' + FeatEngName)
-    plt.xlabel("Predicted Label")
-    plt.ylabel("True Label")
-    plt.show()
+    cr = ClassificationReport(TestingData_Y, Predictions, ModelName,
+                              FeatEngName)
+    common.ConfusionMatrix(TestingData_Y, Predictions, ModelName, FeatEngName)
+    common.WriteToCSV(cr, ModelName, FeatEngName)
 
 
 def acc_score(TestingData_Y, Predictions, ModelName: str, FeatEngName: str):

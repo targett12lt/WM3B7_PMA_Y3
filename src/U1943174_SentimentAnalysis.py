@@ -9,7 +9,6 @@ import warnings
 
 # Sklearn Imports:
 from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import LinearSVC
@@ -24,12 +23,12 @@ os.chdir('....')  # Changing the working directory from script directory
 cwd = os.getcwd()
 base_folder_data = os.path.join(cwd, r'data\aclImdb')  # Specifying base dir
 
+# Removing any old ClassificationReports:
+common.CheckFileExists()
+
 # Setting folders for training and testing data:
 train_data = os.path.join(base_folder_data, 'train')
 test_data = os.path.join(base_folder_data, 'test')
-
-model = MultinomialNB()
-print(model.get_params().keys())
 
 ################################ IMPORTING DATA ################################
 # Logic to choose data import method:
@@ -171,7 +170,8 @@ clf.fit(Vect_Training, Y_train)
 print("Best score achieved using %s" % (clf.best_params_))
 
 # Testing the new one on the validation data:
-models.logRegression(BOW_Training, Y_train, BOW_Validate, Y_validate, 'BOW', **clf.best_params_)
+models.logRegression(Vect_Training, Y_train, Vect_Validate, Y_validate,
+                     'TF-IDF', **clf.best_params_)
 
 ########### OPTIMISING HYPERPARAMETERS FOR MULTINOMINAL NAIVE BAYES ############
 
@@ -192,7 +192,8 @@ clf_nb.fit(Vect_Training, Y_train)
 print("Best score achieved using %s" % (clf_nb.best_params_))
 
 # Testing the new one on the validation data:
-models.MultiNaiveBayes(BOW_Training, Y_train, BOW_Validate, Y_validate, 'BOW', **clf_nb.best_params_)
+models.MultiNaiveBayes(Bigram_Training, Y_train, Bigram_Validate, Y_validate,
+                       'Bigram', **clf_nb.best_params_)
 
 ################## OPTIMISING HYPERPARAMETERS FOR LINEAR SVC ###################
 
@@ -207,7 +208,8 @@ parameters_linear_svc = {
                         }
 
 # Defining the Grid Search function with the desired parameters:
-clf_svc = GridSearchCV(model_svc, param_grid = parameters_linear_svc, scoring = 'accuracy', cv = 10)
+clf_svc = GridSearchCV(model_svc, param_grid = parameters_linear_svc,
+                       scoring = 'accuracy', cv = 10)
 
 clf_svc.fit(Vect_Training, Y_train)
 
@@ -215,7 +217,8 @@ clf_svc.fit(Vect_Training, Y_train)
 print("Best score achieved using %s" % (clf_svc.best_params_))
 
 # Testing new one:
-models.LinSVC(BOW_Training, Y_train, BOW_Validate, Y_validate, 'BOW', **clf_svc.best_params_)
+models.LinSVC(Vect_Training, Y_train, Vect_Validate, Y_validate,
+              'TF-IDF', **clf_svc.best_params_)
 
 ################## TESTING TUNED ALGORITHMS ON TESTING DATA ####################
 
@@ -233,22 +236,20 @@ test_sentiments = test_sentiments.astype('int')
 
 #### Completing Feature engineering on the test data:
 
-# BAG OF WORDS (Unigram) with no cleaning:
-Dirty_BOW_Training, Dirty_BOW_Testing =  common.BagOfWords(X_Dirty_train, test_reviews_dirty)
-
-# BAG OF WORDS (Unigram):
-BOW_Training, BOW_Testing = common.BagOfWords(X_train, test_reviews)
-
 # TF-IDF:
 Vect_Training, Vect_Testing = common.tf_idf(X_train, test_reviews)
 
 # Bigram:
 Bigram_Training, Bigram_Testing = common.n_gram(2, X_train, test_reviews)
 
-# Trigram:
-Trigram_Training, Trigram_Testing = common.n_gram(3, X_train, test_reviews)
+# Measuring model on test dataset using the three models with optimised 
+# feature engineering and hyperparameters:
 
-# Measuring model on test dataset using the three models:
-# models.logRegression(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf.best_params_)
-# models.MultiNaiveBayes(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf_nb.best_params_)
-# models.LinSVC(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf_svc.best_params_)
+# Logistic Regression with optimal feature engineering & hyperparameters:
+models.logRegression(Vect_Training, Y_train, Vect_Testing, Y_validate, 'TF-IDF', **clf.best_params_)
+
+# Multinominal Naive Bayes with optimal feature engineering & hyperparameters:
+models.MultiNaiveBayes(Bigram_Training, Y_train, Bigram_Testing, Y_validate, 'Bigram', **clf_nb.best_params_)
+
+# Linear SVC with optimal feature engineering & hyperparameters:
+models.LinSVC(Vect_Training, Y_train, Vect_Testing, Y_validate, 'TF-IDF', **clf_svc.best_params_)

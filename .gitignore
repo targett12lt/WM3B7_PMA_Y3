@@ -6,3 +6,5 @@
 
 # Ignoring 'Pycache' files:
 *.pyc 
+
+# Ignoring Outputs folder:
