@@ -8,25 +8,12 @@ import pandas as pd
 # For NLP/Sentinent Analysis:
 import nltk
 
-# Downloading 'stopwords' and 'punk' so script can work correctly
-# Try and make this a try and except statement (checks if PC has them downloaded already, if not then downloads them?)
-nltk.download('stopwords')  # Download 'stopwords' for nltk library
-nltk.download('punkt')
-nltk.download('wordnet')
-nltk.download('omw-1.4')
+# Downloading required libraries from NLTK so script can work as required:
+print('Downloading required NLTK Resources... \n\n')
+nltk.download(['stopwords', 'punkt', 'wordnet', 'omw-1.4'])
 
 # Defining 'english' stopwords for nltk
 stop_words = list(set(nltk.corpus.stopwords.words('english')))
-
-# ''' THINGS THAT NEED TO BE INCLUDED:
-# * Import the data - DONE
-# * Make all text lowercase - DONE
-# * Remove all punctuation - DONE
-# * Tokenization - DONE
-# * Normalizing words (condensing different forms of the same word into a single form): Two major methods -> Stemming or Lemmaziation - DONE
-# * Removing Stop Words - DONE
-# * Remove low frequency words? This can probabably be achieved using TF or TF-IDF
-# '''
 
 def cleanText(text):
     '''Cleans the supplied text - splits text into strings provided string is in sentence/paragraph format.
