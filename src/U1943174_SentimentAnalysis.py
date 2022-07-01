@@ -15,13 +15,14 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.svm import LinearSVC
 from sklearn.naive_bayes import MultinomialNB
 
-# Ignoring 'Estimator Fit Fail' warnings when using CVGrid on incorrectly configured configurations:
+# Ignoring 'Estimator Fit Fail' warnings when using CVGrid on incorrectly
+# configured configurations:
 warnings.filterwarnings('ignore')
 
 # Getting file path to data:
 os.chdir('....')  # Changing the working directory from script directory
 cwd = os.getcwd()
-base_folder_data = os.path.join(cwd, r'data\aclImdb')  # Specifying base data directory
+base_folder_data = os.path.join(cwd, r'data\aclImdb')  # Specifying base dir
 
 # Setting folders for training and testing data:
 train_data = os.path.join(base_folder_data, 'train')
@@ -32,9 +33,9 @@ print(model.get_params().keys())
 
 ################################ IMPORTING DATA ################################
 # Logic to choose data import method:
-import_data = input('Would you like to import the data from the file structure (1)'
-' or the ".pkl" (2)?\n\nPlease enter the number of your preferred option followed'
-' by "Enter": ')
+import_data = input('Would you like to import the data from the file structure'
+                    ' (1) or the ".pkl" (2)?\n\nPlease enter the number of '
+                    'your preferred option followed by "Enter": ')
 
 # If running from scratch and creating PKL:
 if '1' in import_data:
@@ -251,4 +252,3 @@ Trigram_Training, Trigram_Testing = common.n_gram(3, X_train, test_reviews)
 # models.logRegression(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf.best_params_)
 # models.MultiNaiveBayes(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf_nb.best_params_)
 # models.LinSVC(BOW_Training, Y_train, BOW_Testing, Y_validate, 'BOW', **clf_svc.best_params_)
-

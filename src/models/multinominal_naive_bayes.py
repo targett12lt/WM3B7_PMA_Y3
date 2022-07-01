@@ -1,22 +1,24 @@
-from sklearn.naive_bayes import MultinomialNB # Suitable for classification with discrete features, can work with td-idf but made for integer counts ideally
+from sklearn.naive_bayes import MultinomialNB
 from .metrics import generate_metrics
 
-def MultiNaiveBayes(TrainingFeatures, TrainingSentiment, TestingFeatures, TestingSentiment,
-                    FeatEngName: str, **hyperParameters):
+
+def MultiNaiveBayes(TrainingFeatures, TrainingSentiment, TestingFeatures,
+                    TestingSentiment, FeatEngName: str, **hyperParameters):
     '''
-    Information here
-    
-    Inputs: 
-    * TrainingData_X - This is the 'feature engineered' training data to be used
-      to train the model.
-    * TrainingData_Y - This is the matching 'sentiment' values for the 'feature 
+    Creates a Multinomonal Naive Bayes Model using sklearn.svm. Outputs
+    metrics and confusion matrix of the model generated.
+
+    Inputs:
+    * TrainingData_X - This is the 'feature engineered' training data to be
+      used to train the model.
+    * TrainingData_Y - This is the matching 'sentiment' values for the 'feature
       engineered' training data (TrainingData_X).
     * TestingData_X - This is the 'feature engineered' testing data that you
-      want the model to predict based upon (i.e. the reviews to predict the 
+      want the model to predict based upon (i.e. the reviews to predict the
       sentiment)
 
-    Outputs: 
-    *
+    Outputs:
+    * Terminal Output of metrics & Pyplot of Confusion Matrix
 
     '''
     nb = MultinomialNB(**hyperParameters)
@@ -31,7 +33,8 @@ def MultiNaiveBayes(TrainingFeatures, TrainingSentiment, TestingFeatures, Testin
 
     # Outputting measurement metrics for model:
     if len(hyperParameters) == 0:
-      generate_metrics(TestingSentiment, prediction, 'Multinominal Naive Bayes', FeatEngName)
+        generate_metrics(TestingSentiment, prediction, 'Multinominal Naive '
+                         'Bayes', FeatEngName)
     else:
-      generate_metrics(TestingSentiment, prediction, 'Multinominal Naive Bayes with Hyperparameters', FeatEngName)
-
+        generate_metrics(TestingSentiment, prediction, 'Multinominal Naive '
+                         'Bayes with Hyperparameters', FeatEngName)

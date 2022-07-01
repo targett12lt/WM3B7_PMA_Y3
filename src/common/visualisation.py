@@ -3,12 +3,6 @@ import matplotlib.pyplot as plt
 
 from os import environ
 
-from sklearn.metrics import plot_roc_curve, roc_curve
-
-# Space to visualise term frequency, etc.
-# compare negative vs positive sentiment in graph for basic data exploration/analysis
-
-# THIS DOESN'T WORK.... LOOK AT THIS LATER :/
 '''
 Ignores the QT Warnings when showing graphs using MatPlotLib or Seaborn
 graphs on local machine
@@ -23,26 +17,17 @@ environ["QT_SCALE_FACTOR"] = "1"
 
 
 def visualise_sentiment_type(dataframe):
-    '''Visualises the dataframe supplied and '''
+    '''Visualises the sentiment types stored in the supplied dataframe
+    
+    INPUTS:
+    * dataframe - The dataframe you want the sentiments visualising
+
+    OUTPUTS:
+    * Returns Matplotlib 'pyplot' visualising the sentiment type in a 'catplot'
+    '''
     ax = sns.catplot(data = dataframe, x = 'Sentiment', kind = 'count', 
                      palette='husl')
     ax.set(xlabel = 'Review Sentiment', ylabel = 'Number of Reviews')
-    # ax.set_xticklabels(['Negative', 'Positive'])
+    ax.set_xticklabels(['Negative', 'Positive'])
     plt.show()
-
-def visualise_fd_histogram(positive_words, negative_words):
-    '''Creates histogram sshowing frequency density and the most common words'''
-    print(type(positive_words), ' LOOK HERE ', positive_words)
-    plt.bar(positive_words.keys(), positive_words.values(), color='g')
-    # plt.bar(negative_words.keys(), negative_words.values(), color='g')
-    plt.show()
-
-# def visualise
-#     roc_curve
-#     plot_roc_curve
-
-
-
-
-
 
