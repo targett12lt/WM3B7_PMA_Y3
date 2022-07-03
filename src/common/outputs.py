@@ -2,8 +2,6 @@ from os.path import exists
 from os import remove
 import datetime
 
-import csv
-
 
 def CheckFileExists():
     '''Checks if CSV Output file already exists, if it does, it gets deleted

@@ -63,9 +63,12 @@ def ConfusionMatrix(TestingData_Y, Predictions, ModelName: str,
     class_label = ["Negative", "Positive"]
     ConfusionMatrixDF = pd.DataFrame(ConfusionMatrix, index=class_label,
                                      columns=class_label)
-    sns.heatmap(ConfusionMatrixDF, annot=True, fmt="d")
+    HeatMap = sns.heatmap(ConfusionMatrixDF, annot=True, fmt="d")
     plt.title("Confusion Matrix for " + ModelName + ': ' + FeatEngName)
     plt.xlabel("Predicted Label")
     plt.ylabel("True Label")
     plt.show()
-    plt.savefig(name_file)
+    
+    # Saving the file locally:
+    figure = HeatMap.get_figure()
+    figure.savefig(name_file)

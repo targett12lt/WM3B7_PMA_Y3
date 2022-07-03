@@ -63,20 +63,22 @@ def importData(dataDirectory):
 
     OUTPUTS:
     * df - Dataframe containing all data from specified data directory
+    
+    Inspiration: https://realpython.com/sentiment-analysis-python/
     '''
     df = pd.DataFrame(columns=['Review', 'Sentiment'])
 
-    for label in ["pos", "neg"]:
-        labeled_directory = f"{dataDirectory}/{label}"
-        for review in os.listdir(labeled_directory):
+    for sentiment in ["pos", "neg"]:
+        sentiment_directory = f"{dataDirectory}/{sentiment}"
+        for review in os.listdir(sentiment_directory):
             if review.endswith(".txt"):
-                with open(f"{labeled_directory}/{review}", encoding="utf8") as f:
+                with open(f"{sentiment_directory}/{review}", encoding="utf8") as f:
                     text = f.read()
                     # Removing HTML formatting & replacing with Python equiv:
                     text = text.replace("<br />", "\n\n")
                     # Removing whitespace from start & end of strings:
                     if text.strip():
-                        if label == 'pos':
+                        if sentiment == 'pos':
                             df.loc[df.shape[0]] = [text, 1]  # Without cleaning
                         else:
                             df.loc[df.shape[0]] = [text, 0]  # Without cleaning

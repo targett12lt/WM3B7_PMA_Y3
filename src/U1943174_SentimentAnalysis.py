@@ -228,7 +228,6 @@ models.LinSVC(Vect_Training, Y_train, Vect_Validate, Y_validate,
 
 # Reviews:
 test_reviews = test_data.CleanedReview
-test_reviews_dirty = test_data.Review
 
 # Sentiments:
 test_sentiments = test_data.Sentiment
@@ -246,10 +245,10 @@ Bigram_Training, Bigram_Testing = common.n_gram(2, X_train, test_reviews)
 # feature engineering and hyperparameters:
 
 # Logistic Regression with optimal feature engineering & hyperparameters:
-models.logRegression(Vect_Training, Y_train, Vect_Testing, Y_validate, 'TF-IDF', **clf.best_params_)
+models.logRegression(Vect_Training, Y_train, Vect_Testing, test_sentiments, 'TF-IDF (Test Data)', **clf.best_params_)
 
 # Multinominal Naive Bayes with optimal feature engineering & hyperparameters:
-models.MultiNaiveBayes(Bigram_Training, Y_train, Bigram_Testing, Y_validate, 'Bigram', **clf_nb.best_params_)
+models.MultiNaiveBayes(Bigram_Training, Y_train, Bigram_Testing, test_sentiments, 'Bigram (Test Data)', **clf_nb.best_params_)
 
 # Linear SVC with optimal feature engineering & hyperparameters:
-models.LinSVC(Vect_Training, Y_train, Vect_Testing, Y_validate, 'TF-IDF', **clf_svc.best_params_)
+models.LinSVC(Vect_Training, Y_train, Vect_Testing, test_sentiments, 'TF-IDF (Test Data)', **clf_svc.best_params_)
