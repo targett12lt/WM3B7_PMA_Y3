@@ -18,7 +18,7 @@ This code aims to implement three suitable machine learning algorithms and optim
 
 
 ## Getting Started
-Run 'U1943174_Sentiment_Analysis.py' script using the Anaconda 'WM3B7' environment. The script will automatically download
+Run 'SA_1943174.py' script using the Anaconda 'WM3B7' environment. The script will automatically download
 the required NLTK files if they aren't already on your local PC. 
 
 ### Prerequisites:

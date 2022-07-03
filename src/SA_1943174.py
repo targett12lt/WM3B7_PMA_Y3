@@ -32,9 +32,12 @@ test_data = os.path.join(base_folder_data, 'test')
 
 ################################ IMPORTING DATA ################################
 # Logic to choose data import method:
-import_data = input('Would you like to import the data from the file structure'
-                    ' (1) or the ".pkl" (2)?\n\nPlease enter the number of '
-                    'your preferred option followed by "Enter": ')
+import_data = input('Would you like to import the data from the data folder'
+                    ' (1) or the previously imported ".pkl" (2)? Use "Option 1'
+                    '" for marking purposes and use "Option 2" for development'
+                    ' purposes (loads slightly quicker as no need to iterate '
+                    'through all review files). \n\nPlease enter the number '
+                    'of your preferred option followed by "Enter": ')
 
 # If running from scratch and creating PKL:
 if '1' in import_data:
