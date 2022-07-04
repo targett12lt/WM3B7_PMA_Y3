@@ -22,6 +22,8 @@ confusion matrices generated. These follow the following naming convention: "Con
 
 
 ## Getting Started
+Set IDE Working directory to parent folder (THIS FOLDER) which contains 'ReadMe.md'
+
 Run 'SA_1943174.py' (in 'src' folder) script using the Anaconda 'WM3B7' environment. The script will automatically 
 download the required NLTK files if they aren't already on your local PC. 
 
