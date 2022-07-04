@@ -26,11 +26,11 @@ def logRegression(TrainingFeatures, TrainingSentiment, TestingFeatures,
     lr_trained = lr.fit(TrainingFeatures, TrainingSentiment)
 
     # Checking that model has been trained correctly:
-    print(lr_trained)
+    # print(lr_trained)  # FOR DEBUGGING PURPOSES
 
     # Making predictions with model:
     prediction = lr.predict(TestingFeatures)
-    print(prediction)
+    # print(prediction)  # FOR DEBUGGING PURPOSES
 
     # Outputting measurement metrics for model:
     if len(hyperParameters) == 0:

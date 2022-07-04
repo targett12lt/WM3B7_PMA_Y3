@@ -9,7 +9,7 @@ import pandas as pd
 import nltk
 
 # Downloading required libraries from NLTK so script can work as required:
-print('Downloading required NLTK Resources... \n\n')
+print('Downloading required NLTK Resources... \n')
 nltk.download(['stopwords', 'punkt', 'wordnet', 'omw-1.4'])
 
 # Defining 'english' stopwords for nltk

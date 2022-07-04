@@ -30,11 +30,11 @@ def LinSVC(TrainingFeatures, TrainingSentiment, TestingFeatures,
     lin_trained = lin.fit(TrainingFeatures, TrainingSentiment)
 
     # Checking that model has been trained correctly:
-    print(lin_trained)
+    # print(lin_trained)  # FOR DEBUGGING PURPOSES
 
     # Making predictions with model:
     prediction = lin.predict(TestingFeatures)
-    print(prediction)
+    # print(prediction)  # FOR DEBUGGING PURPOSES
 
     # Outputting measurement metrics for model:
     if len(hyperParameters) == 0:

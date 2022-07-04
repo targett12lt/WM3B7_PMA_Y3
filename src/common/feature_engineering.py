@@ -16,6 +16,7 @@ def tf_idf(training_data, test_data):
     * Vect_Testing - Dataframe containing TD-IDF Matrix for the
     testing/validation data.
     '''
+    print('\nGenerating TF-IDF Features for training and test data...')
     # Creating Vectorizer object to call:
     TFIDF_Vectorizer = TfidfVectorizer(use_idf=True)
 
@@ -28,7 +29,7 @@ def tf_idf(training_data, test_data):
     print('TD-IDF Shape for Testing data: ', Vect_Testing.shape)
 
     # General Information:
-    print('IDF Info for Vectorizer: ', TFIDF_Vectorizer.idf_, '\n')
+    print('IDF Info for Vectorizer: ', TFIDF_Vectorizer.idf_)
 
     return Vect_Training, Vect_Testing
 
@@ -49,6 +50,8 @@ def BagOfWords(training_data, test_data):
     * BOW_Testing - Dataframe containing Bag Of Words for the
     Testing/Validation dataframe provided
     '''
+    print('\nGenerating BoW Features for training and test data...')
+
     # 'binary = False' means the vocabulary vector is filled with TF:
     BOW_Vectorizer = CountVectorizer(binary=False)
 
@@ -56,13 +59,15 @@ def BagOfWords(training_data, test_data):
     BOW_Testing = BOW_Vectorizer.transform(test_data)
 
     # Information about Training BOW:
+    print('\nBoW information for training data:')
     print('Shape of Sparse Matrix:', BOW_Training.shape)
     print('Amount of Non-Zero occurences: ', BOW_Training.nnz)
     print('Sparsity of matrix: ', (100.0 * BOW_Training.nnz /
           (BOW_Training.shape[0] * BOW_Training.shape[1])))
 
     # Information about Testing BOW:
-    print('\nShape of Sparse Matrix:', BOW_Testing.shape)
+    print('\nBoW information for testing data:')
+    print('Shape of Sparse Matrix:', BOW_Testing.shape)
     print('Amount of Non-Zero occurences: ', BOW_Testing.nnz)
     print('Sparsity of matrix: ', (100.0 * BOW_Testing.nnz /
           (BOW_Testing.shape[0] * BOW_Testing.shape[1])))
@@ -87,6 +92,9 @@ def n_gram(n_value: int, training_data, test_data):
     * ngram_Testing - Dataframe containing ngrams for the Testing/Validation
     dataframe provided
     '''
+    print('\nGenerating N-Gram Features for training and test data...')
+
+
     # 'binary = False' means that the vocabulary vector is filled with TF:
     NGram_Vectorizer = CountVectorizer(binary=False, ngram_range=(n_value,
                                                                   n_value))
@@ -94,14 +102,16 @@ def n_gram(n_value: int, training_data, test_data):
     ngram_Training = NGram_Vectorizer.fit_transform(training_data)
     ngram_Testing = NGram_Vectorizer.transform(test_data)
 
-    # Information about Training BOW:
+    # Information about Training N-Grams:
+    print('\nN-Gram information for training data:')
     print('Shape of Sparse Matrix:', ngram_Training.shape)
     print('Amount of Non-Zero occurences: ', ngram_Training.nnz)
     print('Sparsity of matrix: ', (100.0 * ngram_Training.nnz /
           (ngram_Training.shape[0] * ngram_Training.shape[1])))
 
-    # Information about Testing BOW:
-    print('\nShape of Sparse Matrix:', ngram_Testing.shape)
+    # Information about Testing N-Grams:
+    print('\nN-Gram information for testing data:')
+    print('Shape of Sparse Matrix:', ngram_Testing.shape)
     print('Amount of Non-Zero occurences: ', ngram_Testing.nnz)
     print('Sparsity of matrix: ', (100.0 * ngram_Testing.nnz /
           (ngram_Testing.shape[0] * ngram_Testing.shape[1])))

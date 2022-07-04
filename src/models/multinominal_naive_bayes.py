@@ -25,11 +25,11 @@ def MultiNaiveBayes(TrainingFeatures, TrainingSentiment, TestingFeatures,
     nb_trained = nb.fit(TrainingFeatures, TrainingSentiment)
 
     # Checking that model has been trained correctly:
-    print(nb_trained)
+    # print(nb_trained)  # FOR DEBUGGING PURPOSES
 
     # Making Predictions with model:
     prediction = nb.predict(TestingFeatures)
-    print(prediction)
+    # print(prediction)  # FOR DEBUGGING PURPOSES
 
     # Outputting measurement metrics for model:
     if len(hyperParameters) == 0:

@@ -32,9 +32,9 @@ test_data = os.path.join(base_folder_data, 'test')
 
 ################################ IMPORTING DATA ################################
 # Logic to choose data import method:
-import_data = input('Would you like to import the data from the data folder'
-                    ' (1) or the previously imported ".pkl" (2)? Use "Option 1'
-                    '" for marking purposes and use "Option 2" for development'
+import_data = input('\nWould you like to import the data from the data folder'
+                    ' (1) or the previously imported ".pkl" (2)? Use Option "1'
+                    '" for marking purposes and use Option "2" for development'
                     ' purposes (loads slightly quicker as no need to iterate '
                     'through all review files). \n\nPlease enter the number '
                     'of your preferred option followed by "Enter": ')
@@ -42,38 +42,49 @@ import_data = input('Would you like to import the data from the data folder'
 # If running from scratch and creating PKL:
 if '1' in import_data:
     # Training Data:
-    print('Importing Training Data to DataFrame...')
+    print('Importing data from "data" folder...')
     training_data = common.importData(train_data)
     common.save_to_pkl(training_data, 'TrainingData.pkl')  # Saving data to pkl so it can be opened quickly
 
     # Test Data:
-    print('Importing Test Data to DataFrame...')
     test_data = common.importData(test_data)
     common.save_to_pkl(test_data, 'TestData.pkl')  # Saving data to pkl so it can be opened quickly
 
 else:
     # Importing data from PKL file to make debugging/development quicker:
+    print('Importing data from ".pkl" files...')
     training_data = common.read_from_pkl('TrainingData.pkl')
     test_data = common.read_from_pkl('TestData.pkl')
+    
+print('Import Complete!')
 
 ################################ CLEANING DATA #################################
 
 common.add_cleaned_column(training_data, 'Review', 'CleanedReview')
 common.add_cleaned_column(test_data, 'Review', 'CleanedReview')
 
-print()
-print('Cleaned Pandas DF:\n', training_data)
+print('Import complete. Extract from Pandas DF with cleaned column:\n',
+      training_data, '\n')
 
 ############################### DATA EXPLORATION ###############################
 
-# Visualising the types of sentiment in the training set:
+print('NOTE: Please be aware that the script generates "Pylots" to visualise '
+'confusion matrices and other graphs. When these are visualised the script '
+'will PAUSE running until you CLOSE the graph! ')
+
+# Visualising the number of each type of sentiment in the training set:
 common.visualise_sentiment_type(training_data)
 
 ##################### SPLITTING DATA INTO TRAIN & VALIDATE #####################
 
-X_train, X_validate, Y_train, Y_validate = train_test_split(training_data.CleanedReview, training_data.Sentiment, test_size=0.15, random_state=42)
+print('Splitting training data into training and validation datasets...')
 
-# Fixing Data Types:
+X_train, X_validate, Y_train, Y_validate = train_test_split(training_data.CleanedReview,
+                                                            training_data.Sentiment,
+                                                            test_size=0.15,
+                                                            random_state=42)
+
+# Ensuring Data types are in the correct format: 
 Y_train = Y_train.astype('int')
 Y_validate = Y_validate.astype('int')
 
@@ -85,6 +96,9 @@ Y_Dirty_train = Y_train.astype('int')
 Y_Dirty_validate = Y_validate.astype('int')
 
 ############################## FEATURE ENGINEERING #############################
+
+print('Creating "Feature Engineering" features for training and '
+      'validation dataset...')
 
 # BAG OF WORDS (Unigram) with no cleaning:
 Dirty_BOW_Training, Dirty_BOW_Validate =  common.BagOfWords(X_Dirty_train, X_Dirty_validate)
@@ -105,7 +119,10 @@ Trigram_Training, Trigram_Validate = common.n_gram(3, X_train, X_validate)
 
 ######################## LOGISTIC REGRESSION ########################
 
-# LR With BOW With DIRTY Data:
+print('Testing Logistic Regression model with Feature Engineering approaches'
+      '... This will generate "pyplot" graphs to render!')
+
+####### LR With BOW With DIRTY Data:
 models.logRegression(Dirty_BOW_Training, Y_Dirty_train, Dirty_BOW_Validate, Y_Dirty_validate, 'BOW Dirty')
 
 ####### Logistic Regssion Model with BOW's:
@@ -121,6 +138,9 @@ models.logRegression(Bigram_Training, Y_train, Bigram_Validate, Y_validate, 'Big
 models.logRegression(Trigram_Training, Y_train, Trigram_Validate, Y_validate, 'Trigram')
 
 ##################### MULTINOMINAL NAIVE BAYES ######################
+
+print('Testing Multinominal Naive Bayes model with Feature Engineering '
+      'approaches... This will generate "pyplot" graphs to render!')
 
 ###### Multinominal Naive Bayes Model with DIRTY Data:
 models.MultiNaiveBayes(Dirty_BOW_Training, Y_Dirty_train, Dirty_BOW_Validate, Y_Dirty_validate, 'BOW Dirty')
@@ -139,6 +159,9 @@ models.MultiNaiveBayes(Trigram_Training, Y_train, Trigram_Validate, Y_validate, 
 
 ############################ LINEAR SVC #############################
 
+print('Testing Linear SVC model with Feature Engineering approaches'
+      '... This will generate "pyplot" graphs to render!')
+
 ###### Linear SVC Model with DIRTY Data:
 models.LinSVC(Dirty_BOW_Training, Y_Dirty_train, Dirty_BOW_Validate, Y_Dirty_validate, 'BOW Dirty')
 
@@ -155,6 +178,9 @@ models.LinSVC(Bigram_Training, Y_train, Bigram_Validate, Y_validate, 'Bigram')
 models.LinSVC(Trigram_Training, Y_train, Trigram_Validate, Y_validate, 'Trigram')
 
 ############ OPTIMISING HYPERPARAMETERS FOR LOGISTIC REGRESSION ###############
+
+print('Optimising Logistic Regression model by exhaustively searching for '
+      'hyperparameters...\n')
 
 # Creating Logistic Regression Model:
 model = LogisticRegression()
@@ -178,6 +204,9 @@ models.logRegression(Vect_Training, Y_train, Vect_Validate, Y_validate,
 
 ########### OPTIMISING HYPERPARAMETERS FOR MULTINOMINAL NAIVE BAYES ############
 
+print('Optimising Multinominal Naive Bayes model by exhaustively searching for'
+      ' hyperparameters...\n')
+
 # Creating Multinominal Naive Bayes:
 model = MultinomialNB()
 
@@ -199,6 +228,9 @@ models.MultiNaiveBayes(Bigram_Training, Y_train, Bigram_Validate, Y_validate,
                        'Bigram', **clf_nb.best_params_)
 
 ################## OPTIMISING HYPERPARAMETERS FOR LINEAR SVC ###################
+
+print('Optimising Linear SVC model by exhaustively searching for '
+      'hyperparameters...\n')
 
 # Creating Linear SVC:
 model_svc = LinearSVC()
@@ -225,10 +257,10 @@ models.LinSVC(Vect_Training, Y_train, Vect_Validate, Y_validate,
 
 ################## TESTING TUNED ALGORITHMS ON TESTING DATA ####################
 
-'''Need to use the testing data here and output it's efficiency'''
+print('Testing optimised feature engineering-model (with optimised'
+      ' hyperparameter) combinations to test performance on "Test" data')
 
 #### Setting variables for test data:
-
 # Reviews:
 test_reviews = test_data.CleanedReview
 
@@ -237,6 +269,8 @@ test_sentiments = test_data.Sentiment
 test_sentiments = test_sentiments.astype('int')
 
 #### Completing Feature engineering on the test data:
+
+print('Generating Engineered Features for training data...')
 
 # TF-IDF:
 Vect_Training, Vect_Testing = common.tf_idf(X_train, test_reviews)
@@ -248,10 +282,19 @@ Bigram_Training, Bigram_Testing = common.n_gram(2, X_train, test_reviews)
 # feature engineering and hyperparameters:
 
 # Logistic Regression with optimal feature engineering & hyperparameters:
-models.logRegression(Vect_Training, Y_train, Vect_Testing, test_sentiments, 'TF-IDF (Test Data)', **clf.best_params_)
+models.logRegression(Vect_Training, Y_train, Vect_Testing, test_sentiments,
+                     'TF-IDF (Test Data)', **clf.best_params_)
 
 # Multinominal Naive Bayes with optimal feature engineering & hyperparameters:
-models.MultiNaiveBayes(Bigram_Training, Y_train, Bigram_Testing, test_sentiments, 'Bigram (Test Data)', **clf_nb.best_params_)
+models.MultiNaiveBayes(Bigram_Training, Y_train, Bigram_Testing,
+                       test_sentiments, 'Bigram (Test Data)',
+                       **clf_nb.best_params_)
 
 # Linear SVC with optimal feature engineering & hyperparameters:
-models.LinSVC(Vect_Training, Y_train, Vect_Testing, test_sentiments, 'TF-IDF (Test Data)', **clf_svc.best_params_)
+models.LinSVC(Vect_Training, Y_train, Vect_Testing, test_sentiments,
+              'TF-IDF (Test Data)', **clf_svc.best_params_)
+
+print('All calculations are complete. \n\nClassification Reports can be found'
+      ' in "outputs\ClassificationReports.csv"\n\nConfusion matrices can be '
+      'found with the following file structure '
+      '"outputs\ConfusionMatrix_{NameOfModel}_{FeatureEngineeringName}.png"')

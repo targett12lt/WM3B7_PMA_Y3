@@ -12,6 +12,8 @@ def CheckFileExists():
     if file_exists:  # Removing old file to avoid confusion:
         remove('Outputs\ClassificationReports.csv')
     
+    print('Generating new "ClassificationReport.csv"...')
+    
     # Creating new file:
     text = ('Classification Report generated at: ' +
             str(datetime.datetime.now()))
