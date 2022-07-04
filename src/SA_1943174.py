@@ -70,7 +70,9 @@ print('Import complete. Extract from Pandas DF with cleaned column:\n',
 
 print('NOTE: Please be aware that the script generates "Pylots" to visualise '
 'confusion matrices and other graphs. When these are visualised the script '
-'will PAUSE running until you CLOSE the graph! ')
+'will PAUSE running until you CLOSE the graph! \n')
+
+print('Visualising sentiment type on graph for "Training Data"... ')
 
 # Visualising the number of each type of sentiment in the training set:
 common.visualise_sentiment_type(training_data)
