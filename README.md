@@ -22,13 +22,13 @@ confusion matrices generated. These follow the following naming convention: "Con
 
 
 ## Getting Started
-Set IDE Working directory to parent folder (THIS FOLDER) which contains 'ReadMe.md'
+Set IDE Working directory to parent folder (THIS FOLDER) which contains 'ReadMe.md'  
 
 Run 'SA_1943174.py' (in 'src' folder) script using the Anaconda 'WM3B7' environment. The script will automatically 
 download the required NLTK files if they aren't already on your local PC. 
 
 FOR MARKING PURPOSES: Please ensure that you choose option '1' when prompted (followed by enter) - this ensures the 
-data is imported from the file structure, rather than the '.pkl' files.
+data is imported from the file structure, rather than the '.pkl' files.  
 
 NOTE: Please be aware that the script generates "Pylots" to visualise confusion matrices and other graphs. 
 When these are visualised the script will pause running until you close the graph!  
